@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Game\Field.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Player.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Camera.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Weapon.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Item.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Carry.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Gauge.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Game.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Effekseer\EffekseerEffect.h">
+      <Filter>Game\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="Effekseer\EffekseerManager.h">
+      <Filter>Game\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\BuyPoint.h">
+      <Filter>Game\Sell_and_Buy</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Sellpoint.h">
+      <Filter>Game\Sell_and_Buy</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\RedFilter.h">
+      <Filter>Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imconfig.h">
+      <Filter>Game\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui.h">
+      <Filter>Game\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_glfw.h">
+      <Filter>Game\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_opengl2.h">
+      <Filter>Game\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h">
+      <Filter>Game\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_ja_gryph_ranges.h">
+      <Filter>Game\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h">
+      <Filter>Game\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h">
+      <Filter>Game\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>Game\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GreenFilter.h">
+      <Filter>Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Title.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\BlackFilter.h">
+      <Filter>Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Entity.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Spider.h">
+      <Filter>Game\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Enemy.h">
+      <Filter>Game\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\NavEdit.h">
+      <Filter>Game\Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Navmanager.h">
+      <Filter>Game\Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\NavNode.h">
+      <Filter>Game\Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\EnemyBase.h">
+      <Filter>Game\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\UIBase.h">
+      <Filter>Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\UI.h">
+      <Filter>Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="GreenDragon.h">
+      <Filter>Game\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SpiderBullet.h">
+      <Filter>Game\Enemy\projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="PoisonBreath.h">
+      <Filter>Game\Enemy\projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Light.h">
+      <Filter>Game\lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="lightManager.h">
+      <Filter>Game\lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\DebugUI.h">
+      <Filter>Game\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Base.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Enemy_Base.h">
+      <Filter>Game\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SceneManager.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeRoamingCamera.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Tutorial\TutorialManager.h">
+      <Filter>Game\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="Tutorial\Renderer.h">
+      <Filter>Game\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="Tutorial\Input.h">
+      <Filter>Game\Tutorial</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Game\Field.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Player.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Camera.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Weapon.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Item.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Carry.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Gauge.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Game.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Effekseer\EffekseerEffect.cpp">
+      <Filter>Game\Effekseer</Filter>
+    </ClCompile>
+    <ClCompile Include="Effekseer\EffekseerManager.cpp">
+      <Filter>Game\Effekseer</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\BuyPoint.cpp">
+      <Filter>Game\Sell_and_Buy</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Sellpoint.cpp">
+      <Filter>Game\Sell_and_Buy</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\RedFilter.cpp">
+      <Filter>Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>Game\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_demo.cpp">
+      <Filter>Game\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>Game\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_glfw.cpp">
+      <Filter>Game\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_opengl2.cpp">
+      <Filter>Game\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_ja_gryph_ranges.cpp">
+      <Filter>Game\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>Game\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GreenFilter.cpp">
+      <Filter>Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Title.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\BlackFilter.cpp">
+      <Filter>Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Entity.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Spider.cpp">
+      <Filter>Game\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Enemy.cpp">
+      <Filter>Game\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\NavEdit.cpp">
+      <Filter>Game\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\NavManager.cpp">
+      <Filter>Game\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\NavNode.cpp">
+      <Filter>Game\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\EnemyBase.cpp">
+      <Filter>Game\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\UIBase.cpp">
+      <Filter>Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\UI.cpp">
+      <Filter>Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GreenDragon.cpp">
+      <Filter>Game\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SpiderBullet.cpp">
+      <Filter>Game\Enemy\projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="PoisonBreath.cpp">
+      <Filter>Game\Enemy\projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Light.cpp">
+      <Filter>Game\lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="lightManager.cpp">
+      <Filter>Game\lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\DebugUI.cpp">
+      <Filter>Game\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Base.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Enemy_Base.cpp">
+      <Filter>Game\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SceneManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="FreeRoamingCamera.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial\TutorialManager.cpp">
+      <Filter>Game\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial\Renderer.cpp">
+      <Filter>Game\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial\Input.cpp">
+      <Filter>Game\Tutorial</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Base">
+      <UniqueIdentifier>{c82e17db-4a05-41de-9102-e75c7954fa95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{585ac33e-4160-4b12-af12-85d6a56509dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Sell_and_Buy">
+      <UniqueIdentifier>{15d4eedf-9519-4b3b-a206-ff441a3549b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Effekseer">
+      <UniqueIdentifier>{c13d25c4-3a5f-4dde-a1f0-722b71449399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\UI">
+      <UniqueIdentifier>{11234e44-61f9-4a7c-8b8b-f6cf06c98f96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\imgui">
+      <UniqueIdentifier>{a675a01e-9c16-4369-9171-5428f7ebaf2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Enemy">
+      <UniqueIdentifier>{7422e70a-3542-4018-a7c3-adff2487d6fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Enemy\projectile">
+      <UniqueIdentifier>{58b31494-6ca1-4ccb-a91e-bee5c7355a47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Navigation">
+      <UniqueIdentifier>{5bb73a18-3af0-44c7-81a1-371fd29520b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\lighting">
+      <UniqueIdentifier>{171a93e8-d841-4150-88e4-df35ac6c2c58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Supportfunction">
+      <UniqueIdentifier>{15048147-4519-46e0-8ba8-5603846cc7f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Supportfunction\Coach">
+      <UniqueIdentifier>{cb301aa9-4500-4781-9e58-2ec2ebdd642f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Tutorial">
+      <UniqueIdentifier>{1f01157f-a737-4c8f-b69a-2e92ec23b4ed}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
