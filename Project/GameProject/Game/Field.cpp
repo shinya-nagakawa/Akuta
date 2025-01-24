@@ -42,12 +42,34 @@ Field::Field(int area) : Base(eField), tutorialManager(nullptr) {
 
         mp_colNavModel = GET_RESOURCE("FieldNav", CModel);
         mp_colNavModel->UpdateMatrix();
-
+        int idx = 3;
         // ƒ‰ƒCƒg‚Ì’Ç‰Á
-        Base::Add(new Light(CVector3D(13.46, 0, 105.8), 3));
-        Base::Add(new Light(CVector3D(-6.74, 0, 105.8), 4));
-        Base::Add(new Light(CVector3D(0.5, 3.5, 0), 5));
-        Base::Add(new Light(CVector3D(3.5, -0.3, 106), 6));
+        Base::Add(new Light(CVector3D(13.46, 0, 105.8), idx++));
+        Base::Add(new Light(CVector3D(-6.74, 0, 105.8), idx++));
+        Base::Add(new Light(CVector3D(0.5, 3.5, 0), idx++));
+        Base::Add(new Light(CVector3D(3.5, -0.3, 106), idx++));
+
+
+
+        Base::Add(new Light(CVector3D(23.34, 5.1, 136.67), idx++));
+        Base::Add(new Light(CVector3D(37.19, 5.1, 128.8), idx++));
+        Base::Add(new Light(CVector3D(23.43, 5.1, 120.78), idx++));
+
+        Base::Add(new Light(CVector3D(17.64, 0.89, 90.63), idx++));
+        Base::Add(new Light(CVector3D(-11.154, 0.89, 90.63), idx++));
+
+
+        Base::Add(new Light(CVector3D(-11.854, 2.119, -11.26), idx++));
+        Base::Add(new Light(CVector3D(12.25, 2.311, -4.27), idx++));
+
+        Base::Add(new Light(CVector3D(-19.33, 2.199, 32.648), idx++));
+        Base::Add(new Light(CVector3D(-3.952, 2.33, 13.959), idx++));
+        Base::Add(new Light(CVector3D(-0.326, 2.343, 5.957), idx++));
+        Base::Add(new Light(CVector3D(7.462, 2.119, 13.96), idx++));
+        Base::Add(new Light(CVector3D(-0.552, 2.734, 22.693), idx++));
+
+        Base::Add(new Light(CVector3D(36.902, 3.267, 32.165), idx++));
+
         break;
     }
     }

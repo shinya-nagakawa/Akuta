@@ -61,7 +61,6 @@ private:
 	int m_jetpackFuel;	//ジェットパックの燃料
 	float m_jetpackForce;	//ジェットパックの力
 	float m_Force;
-
 	//効果音系
 	bool m_isWalking;
 	float m_footstepTimer;
@@ -69,6 +68,7 @@ private:
 	
 	std::vector<Carry*>m_inventory;
 	const int m_maxItems;
+	CImage m_inventory_image;
 
 	static Player* ms_instance;
 	
@@ -126,6 +126,7 @@ public:
 	int GetPlayerMoney();
 	void GainMoney(int Money);
 	int Pay(int Money);
+	void Draw();
 	//void Sell(Enemy* enemy);
 	
 //担ぎ関連
@@ -133,7 +134,8 @@ public:
 	void SetCarry(Carry* carry);
 	void DropCarry(Carry* carry);
 	bool PickUpItem(Carry* item);
-	
+	void SwapItem(int idx);
+	void SelectItem();
 	void SetWeight(float weight);
 	void SaveOriginalWeight();
 	void ResetToOriginalWeight();

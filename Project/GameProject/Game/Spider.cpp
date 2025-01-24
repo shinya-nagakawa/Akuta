@@ -40,6 +40,9 @@ Spider::Spider(const CVector3D& pos, int enemy_Hp, float weight):Enemy_Base(pos,
 	m_ground_normal = CVector3D(0, 1, 0);
 	m_rot_matrix.SetIndentity();
 
+	m_item_id = 2;
+	m_se_cnt = 0;
+
 }
 
 Spider::~Spider()
@@ -98,6 +101,11 @@ void Spider::Idle()
 				float currentSpeed = moveSpeed * Utility::Rand(1.2f, 1.8f);
 				m_pos += dir * currentSpeed;
 				m_model.ChangeAnimation(1); // 前進アニメーション
+				m_se_cnt++;
+				if (m_se_cnt % 16==0) {
+					SOUND("足音")->Play3D(m_pos, CVector3D::zero, false, true, EFX_REVERB_PRESET_CAVE);
+				}
+
 				float a = Utility::NormalizeAngle(m_rot_target.y - m_rot.y);
 				m_rot.y += a * 0.2f;  // 回転の速度を少し速め
 			}

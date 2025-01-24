@@ -12,7 +12,7 @@ private:
 
 	CVector3D m_ground_normal;
 	CMatrix m_rot_matrix;
-
+	int m_se_cnt;
 	int m_hp;
 	int m_state;				
 	int m_previousState;	//‘O‚Ìó‘Ô

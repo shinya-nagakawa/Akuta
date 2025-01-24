@@ -58,6 +58,8 @@ Player::Player(const CVector3D& pos) :Base(ePlayer), m_carry(nullptr), m_gauge(n
 		for (int i = 5; i <= 58; i++) {
 			m_model->GetNode(i)->SetAnimationLayer(1);
 		}
+		m_inventory.resize(m_maxItems);
+		m_inventory_image = COPY_RESOURCE("Inventory", CImage);
 
 		// ゲージ生成
 		Base::Add(m_gauge = new Gauge(Gauge::GaugeType::ePlayerGauge, 0.28f));
@@ -142,7 +144,7 @@ void Player::Idle()
 {
 	CVector3D key_dir(0, 0, 0);
 	int animation = 0;
-
+	SelectItem();
 	HandleMovement(key_dir, animation);
 	
 	//ジェットパック
@@ -178,6 +180,32 @@ void Player::Idle()
 		if (m_isGround)
 		{
 			m_model->ChangeAnimation(0, animation);
+			static int idx = 0;
+			static int anim_old = 0;
+			if (animation != anim_old) {
+				anim_old = animation;
+				idx = 0;
+			}
+			static const int se_frame[11][2] = {
+				{4,15 },	//0
+				{13,32 },	// 左移動アニメーション
+				{4,15 },	//2
+				{4,15 },	//3
+				{4,15 },	//4
+				{4,15 },	//5
+				{13,32 },	// 右移動アニメーション
+				{4,15 },	// 前進アニメーション
+				{13,32 },	// 後退アニメーション
+				{4,15 },	//9
+				{4,15 },	//10
+			};
+
+			if (m_model->GetAnimationFrame(0) == se_frame[animation][idx]) {
+				idx = (idx + 1) % 2;
+				SOUND("足音")->Play3D(m_pos,CVector3D::zero,false,true, EFX_REVERB_PRESET_CAVE);
+			}
+
+
 		}
 		m_state = eState_Move;
 		m_isMove = true;
@@ -427,25 +455,7 @@ void Player::HandleMovement(CVector3D& key_dir, int& animation)
 		m_JumpDelay = 0;
 	}
 
-	// 足音再生
-	if (m_isGround && key_dir.LengthSq() > 0) {
-		// 地面にいるかつ移動している場合
-		if (m_footstepTimer <= 0.0f) {
-			SOUND("足音")->Play(); // 足音再生
-			m_footstepTimer = m_footstepInterval; // 足音の間隔を設定
-		}
-		m_isWalking = true; // 歩行中フラグ
-	}
-	else {
-		// 空中にいる、または停止中の場合
-		SOUND("足音")->Stop(); // 足音停止
-		m_isWalking = false; // 停止時フラグ
-	}
-
-	if (m_hp <= 0)
-	{
-		SOUND("足音")->Stop();
-	}
+	
 
 	if (m_isDashing) {
 		m_footstepInterval = 0.3f; // ダッシュ時は間隔を短く
@@ -517,29 +527,20 @@ bool Player::CheckItemCollision(const CVector3D& dir)
 			if (CCollision::CollisionCapsule(b->m_lineS, b->m_lineE, b->m_rad,
 				start, end, m_rad))
 			{
-				//もしプレイヤーがすでに何かを持っているなら。
-				if (m_inventory.size() >= m_maxItems)
+
+				if (m_isEkeyPressd)
 				{
-					FONT_T()->Draw(800, 680, 1.0f, 1.0f, 1.0f, "hand full");
-					return false;
-				}
 
-
-				else
-				{
-					if (m_isEkeyPressd)
-					{
-						
-						SetCarry(carry);
-						m_isEkeyPressd = false;
-						return true;
-					}
-
-					FONT_T()->Draw(800, 680, 1.0f, 1.0f, 1.0f, "Pickup Ekey");
-					//printf("Item");
-					//m_state = eState_Idle;
+					SetCarry(carry);
+					m_isEkeyPressd = false;
 					return true;
 				}
+
+				FONT_T()->Draw(800, 680, 1.0f, 1.0f, 1.0f, "Pickup Ekey");
+				//printf("Item");
+				//m_state = eState_Idle;
+				return true;
+
 			}
 		}
 	}
@@ -777,6 +778,39 @@ int Player::Pay(int Money)
 	return PlayerMoneyMax -= Money;
 }
 
+void Player::Draw()
+{
+	//名前長いので短い名前の参照で操作
+	CImage& img = m_inventory_image;
+	//表示基準位置
+	CVector2D base_pos(540,960);
+	const int icon_size = 96;
+	const int icon_idx = 2;
+	const int src_size = 128;
+	img.SetSize(icon_size, icon_size);
+	//画像の中の	0番目…インベントリ用フレーム
+	//				1番目…装備用フレーム
+	//				2番目…アイテムアイコン
+	
+	//インベントリのアイテム
+	for (int i = 0; i < m_maxItems; i++) {
+		img.SetPos(base_pos + CVector2D(icon_size*i, 0));
+		if (m_inventory[i] && m_inventory[i]==m_carry) {
+			img.SetRect(0, 1 * src_size, src_size, (1 + 1) * src_size);
+		}	else {
+			img.SetRect(0, 0, src_size, 0 + src_size);
+		}
+		img.Draw();
+		if (m_inventory[i]) {
+			int idx = icon_idx + m_inventory[i]->m_item_id;
+			img.SetRect(0, idx * src_size, src_size, (idx + 1) * src_size);
+			img.Draw();
+		}
+
+		FONT_T()->Draw(img.m_pos.x, img.m_pos.y+32, 0.0f, 0.0f, .0f, "%d",i+1);
+	}
+}
+
 int Player::GetPlayerMoney()
 {
 	return PlayerMoneyMax;
@@ -835,10 +869,25 @@ void Player::ApplyFallDamage()
 void Player::SetCarry(Carry* carry)
 {
 	if (m_carry) {
-		// すでに持っているアイテムがあれば、それをしまう
-		PickUpItem(m_carry);
+		m_carry->PutInPocket();  //今の装備を外す
 	}
-
+	//アイテムを拾う
+	if (!PickUpItem(carry)) {
+		//拾えなかったら
+		// すでに持っているアイテムがあれば、捨てる
+		if (m_carry) {
+			m_carry->Unequip();
+			// アイテムを少し上に配置（ドロップ）
+			m_carry->m_pos = m_pos + CVector3D(0, 0.8f, 0);
+			// インベントリから削除
+			auto it = std::find(m_inventory.begin(), m_inventory.end(), m_carry);
+			if (it != m_inventory.end()) {
+				*it = nullptr;
+			}
+			//もう一回拾う
+			PickUpItem(carry);
+		}
+	}
 	m_carry = carry;
 	if (m_carry) {
 		m_carry->Equip();  // 新しいアイテムを装備
@@ -889,22 +938,23 @@ void Player::DropCarry(Carry* carry)
 		// アイテムを少し上に配置（ドロップ）
 		m_carry->m_pos = m_pos + CVector3D(0, 0.8f, 0);
 
+
 		// インベントリから削除
 		auto it = std::find(m_inventory.begin(), m_inventory.end(), carry);
 		if (it != m_inventory.end()) {
-			m_inventory.erase(it);
+			*it = nullptr;
 		}
 
+		m_carry = nullptr;
 		// インベントリに他のアイテムがあれば自動的に装備する
-		if (!m_inventory.empty()) {
-			// ここで他のアイテムがあれば装備
-			m_carry = m_inventory.back();  // 一番最初のアイテムを装備
-			m_carry->Equip();
-			m_carry->m_stateItem = Carry::e_Equip; // 状態を担ぎに設定
-			m_isCarrying = true;
-		}
-		else {
-			m_carry = nullptr;  // もうアイテムがない場合は空に
+		for (auto& c : m_inventory) {
+			if (c) {
+				// ここで他のアイテムがあれば装備
+				m_carry = c;
+				m_carry->Equip();
+				m_carry->m_stateItem = Carry::e_Equip; // 状態を担ぎに設定
+				m_isCarrying = true;
+			}
 		}
 	}
 }
@@ -913,14 +963,46 @@ void Player::DropCarry(Carry* carry)
 //
 bool Player::PickUpItem(Carry* carry)
 {
-	if (m_inventory.size() < m_maxItems) {
-		m_inventory.push_back(carry);
+	int empty_idx = -1;
+	int i = 0;
+	//空きスロットを調べる
+	for (auto& c : m_inventory) {
+		if (!c) {
+			empty_idx = i;
+			break;
+		}
+		i++;
+	}
+	//空きがあれば
+	if (empty_idx>=0) {
+		m_inventory[empty_idx] = carry;
 		carry->PutInPocket(); 
 		return true;
-	}
-	else {
+	} else {
 		// 所持アイテム数が上限に達している
 		return false;
+	}
+}
+
+void Player::SwapItem(int idx)
+{
+	if (m_inventory[idx] == m_carry) return;
+	if (m_carry) {
+		// 現在のアイテムの装備解除
+		m_carry->PutInPocket();
+	}
+	// インベントリのアイテムと入れ替え
+	m_carry = m_inventory[idx];
+	m_carry->Equip();
+
+}
+
+void Player::SelectItem()
+{
+	for (int i = 0;i<m_inventory.size(); i++) {
+		if (PUSH((CInput::E_BUTTON)(CInput::eNum1+i))) {
+			SwapItem(i);
+		}
 	}
 }
 

@@ -29,7 +29,7 @@ CImage img;
 
 // ƒOƒ[ƒoƒ‹‚Å sunset ‚ð UI ‚ÉƒŠƒ“ƒN
 DebugUI* debugUI = nullptr;
-//float sunset = 0.1;
+float sunset = 0.1;
 
 
 
@@ -49,7 +49,16 @@ void MainLoop(void) {
 	Base::UpdateALL();
 	Base::CollisionALL();
 
-	/*
+	CSound::GetInstance()->UpdateListener();
+
+	if (PUSH(CInput::eButton1)) {
+		SOUND("‘«‰¹")->Play();
+	}
+	if (PUSH(CInput::eButton2)) {
+		SOUND("‘«‰¹")->Play(false,true, EFX_REVERB_PRESET_CAVE);
+	}
+
+	
 	if (HOLD(CInput::eButton10)) {
 		sunset = max(sunset - 0.001f, 0);
 	}
@@ -63,7 +72,7 @@ void MainLoop(void) {
 	CLight::SetPos(2, CVector3D(0, 200, 200));
 	CLight::SetDir(2, CVector3D(0.5, -1, 0.5).GetNormalize());
 	CLight::SetColor(2, CVector3D(0.4f * sunset, 0.4f * sunset, 0.4f * sunset), CVector3D(0.6f * sunset, 0.6f * sunset, 0.6f * sunset));
-	//CLight::SetColor(1, CVector3D(0.4f, 0.4f, 0.4f), CVector3D(0.6f, 0.6f, 0.6f));*/
+	//CLight::SetColor(1, CVector3D(0.4f, 0.4f, 0.4f), CVector3D(0.6f, 0.6f, 0.6f));
 
 }
 
@@ -99,6 +108,11 @@ void Init(void)
 	CInput::SetButton(0, CInput::eButton6, 'R');
 	CInput::SetButton(0, CInput::eButton7, 'Q');
 	CInput::SetButton(0, CInput::eButton10, VK_RETURN);
+	CInput::SetButton(0, CInput::eNum1, '1');
+	CInput::SetButton(0, CInput::eNum2, '2');
+	CInput::SetButton(0, CInput::eNum3, '3');
+	CInput::SetButton(0, CInput::eNum4, '4');
+	CInput::SetButton(0, CInput::eNum5, '5');
 	CInput::SetButton(0, CInput::eUp, 'W');
 	CInput::SetButton(0, CInput::eDown, 'S');
 	CInput::SetButton(0, CInput::eLeft, 'A');
@@ -173,6 +187,7 @@ void Init(void)
 	ADD_RESOURCE("RedFilter", CImage::CreateImage("UI/red_filter.png"));
 	ADD_RESOURCE("GreenFilter", CImage::CreateImage("UI/green_filter.png"));
 	ADD_RESOURCE("BlackFilter", CImage::CreateImage("UI/black_filter.png"));
+	ADD_RESOURCE("Inventory", CImage::CreateImage("UI/inventory.png"));
 
 	ADD_RESOURCE("GameClear", CImage::CreateImage("UI/GameClear.png"));
 
@@ -183,7 +198,7 @@ void Init(void)
 	SOUND("Œ•—Ž‚Æ‚·")->Load("BGM/sei_ge_fokusupun_otosu03.wav");
 	SOUND("”„‹p‰¹")->Load("BGM/Cash_Register-Drawer02-1_Low_.wav");
 	SOUND("”„‹p’†")->Load("BGM/baikyakutyu.wav");
-	SOUND("‘«‰¹")->Load("BGM/arukuoto.wav");
+	SOUND("‘«‰¹")->Load("BGM/arukuoto (mono).wav");
 	SOUND("º")->Load("BGM/Syaberukoe.wav");
 
 	//Base::Add(new Game());
@@ -305,6 +320,8 @@ int __main(int* argcp, char** argv) {
 	}
 	HDC glDc = wglGetCurrentDC();
 	GL::hWnd = WindowFromDC(glDc);
+	SetWindowLong(GL::hWnd, GWL_STYLE, WS_POPUP);
+	SetWindowPos(GL::hWnd, HWND_TOP, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SWP_SHOWWINDOW);
 
 	Init();
 

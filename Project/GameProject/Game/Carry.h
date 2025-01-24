@@ -8,6 +8,7 @@ protected:
 public:
 	
 	int m_stateItem;
+	int m_item_id;
 	enum
 	{
 		e_Drop,

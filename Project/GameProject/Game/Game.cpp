@@ -88,6 +88,16 @@ Game::Game(int FieldId) :Base(eScene)
 
 	Base::Add(new Camera());
 	Base::Add(new Weapon(false, CVector3D(0, -1, 0),5.0f));
+
+	Base::Add(new Weapon(false, CVector3D(0, -1, 1), 5.0f));
+
+	Base::Add(new Weapon(false, CVector3D(0, -1, 2), 5.0f));
+
+	Base::Add(new Weapon(false, CVector3D(0, -1, 3), 5.0f));
+
+	Base::Add(new Weapon(false, CVector3D(2, -1, 3), 5.0f));
+
+
 	Base::Add(new Weapon(false, CVector3D(3.5, -1.3, 103), 5.0f));
 	Base::Add(new Weapon(false, CVector3D(0, -3.8, 0),20.0f));
 	Base::Add(new Item(false, CVector3D(0, -3.8, -2),30));

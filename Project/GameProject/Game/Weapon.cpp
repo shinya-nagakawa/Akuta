@@ -11,6 +11,8 @@ Weapon::Weapon(bool Equippsed,const CVector3D& pos,float weight) :Carry(eWeapon)
 	sword_model = COPY_RESOURCE("Sword", CModelObj);
 	m_rad = 0.1;
 	m_stateItem = Equippsed ? e_Equip : e_Drop;
+
+	m_item_id = 0;
 	
 }
 

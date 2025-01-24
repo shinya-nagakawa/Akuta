@@ -53,6 +53,8 @@ Enemy::Enemy(const CVector3D& pos,int enemy_Hp,float weight,EnemyRole role ) :En
 	// “G‚ÌˆÊ’u‚ÉŒo˜H’Tõ—p‚Ìƒm[ƒh‚ðì¬
 	m_navNode = new NavNode(m_pos, NavNode::NodeType::Destination);
 	m_navNode->SetNodeColor(CVector3D(0.125f, 0.25f, 1.0f));
+
+	m_item_id = 1;
 }
 
 
