@@ -61,6 +61,7 @@ private:
 	int m_jetpackFuel;	//ジェットパックの燃料
 	float m_jetpackForce;	//ジェットパックの力
 	float m_Force;
+
 	//効果音系
 	bool m_isWalking;
 	float m_footstepTimer;
@@ -136,6 +137,7 @@ public:
 	bool PickUpItem(Carry* item);
 	void SwapItem(int idx);
 	void SelectItem();
+	
 	void SetWeight(float weight);
 	void SaveOriginalWeight();
 	void ResetToOriginalWeight();

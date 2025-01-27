@@ -21,6 +21,8 @@ public:
 	float GetDistance();
 	static Camera* Instance();
 
+	CMatrix GetViewMatrix()const;
+	CMatrix GetProjectionMatrix() const;
 	
 
 	void Shake(float intensity, float duration);

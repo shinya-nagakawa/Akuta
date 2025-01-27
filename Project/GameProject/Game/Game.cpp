@@ -22,10 +22,11 @@ UI* ui = nullptr;
 
 Game::Game(int FieldId) :Base(eScene)
 {
+	m_fieldID = FieldId;
 	m_img = COPY_RESOURCE("GameClear", CImage);
 	m_img.SetSize(2000,1100);
 	OpenMenu = false;
-	sunset = 1.1f;
+	sunset = 0.3f;
 	SoundVolume = 1.0f;
 	UI* ui = new UI(&sunset, &SoundVolume);
 
@@ -36,30 +37,33 @@ Game::Game(int FieldId) :Base(eScene)
 	
 	//Base::Add(new Player(CVector3D(3.5, -1.3, 103)));
 	Base::Add(new Player(CVector3D(0,0,0)));
-	Base::Add(new Spider(CVector3D(4, 0, 60),1, 10));
-	Base::Add(new Spider(CVector3D(0, 0, 60), 1, 15));
+	
 	//Base::Add(new Spider(CVector3D(0, 0, 0), 1, 10));
-	Base::Add(new Enemy(CVector3D(0, 2, 15),3,25,Enemy::eRole_Attacker));
-	Base::Add(new Enemy(CVector3D(0, 2, 15), 2, 25, Enemy::eRole_Flanker));
 	//Base::Add(new Spider(CVector3D(1, 2, 4), 3, 10));
 	//Base::Add(new Spider(CVector3D(1, 0, 25), 3, 10));
 	//Base::Add(new GreenDragon(CVector3D(0, 0, 0),3,10,0.04f));
 	//Base::Add(new Enemy(CVector3D(21, 0.8, 9),1,20));
 	//Base::Add(new Enemy(CVector3D(21, 0.8, 9), 1, 20));
 	//Base::Add(new Enemy(CVector3D(0.4, 0.5, 11),5,20));
-	Base::Add(new Spider(CVector3D(29, 1, 28), 3, 10));
-	Base::Add(new Spider(CVector3D(29, 1, 31), 3, 10));
+	
 	//Base::Add(new Enemy(CVector3D(-40,-1, 58), 5, 20));
-	//Base::Add(new Spider(CVector3D(-40, -1, 58),3,10));
-	Base::Add(new Spider(CVector3D(4, -1, 107), 3, 10));
+	
 	//Base::Add(new Enemy(CVector3D(7, -1, 107), 5, 20));
 	//Base::Add(new Enemy(CVector3D(10, -1, 107), 5, 20));
-	//Base::Add(new Enemy(CVector3D(5, -1, 107), 5, 20,Enemy::eRole_Attacker));
-	//Base::Add(new Enemy(CVector3D(4, -1, 107), 5, 20));
+	
 	
 
 	//Base::Add(new GreenDragon(CVector3D(0, 0, 0), 3, 10,0.04f));
-	Base::Add(new GreenDragon(CVector3D(3.5, -1.3, 106), 3, 10, 0.04f));
+	switch (m_fieldID) {
+	case 0:
+		break;
+	case 1:
+		Base::Add(new GreenDragon(CVector3D(3.5, -1.3, 106), 6, 10, 0.04f));
+		Base::Add(new Weapon(false, CVector3D(3.5, -1.3, 103), 5.0f));
+		m_dragonCount++;
+		break;
+	}
+
 
 	//Base::Add(new Enemy(CVector3D(0, 2, 35),2, 20));
 
@@ -70,39 +74,13 @@ Game::Game(int FieldId) :Base(eScene)
 	//Base::Add(new Enemy(CVector3D(-50, 2, 30),5, 20));
 	//Base::Add(new Enemy(CVector3D(-20, 2, 10),5, 20));
 
-	/*
-	Base::Add(new Enemy(CVector3D(-74.622124, 2.458017, 39.656399),5, 20));
-	Base::Add(new Enemy(CVector3D(-81.240852, 0.168247, 44.605518
-	),5, 20));
-	Base::Add(new Enemy(CVector3D(-30.986040, -1.140389, 34.011845),5, 20));
-	Base::Add(new Enemy(CVector3D(-44.287731, -0.065449, 37.407162
-	),5, 20));
-	Base::Add(new Enemy(CVector3D(-59.488903, 0.300692, 43.004154
-	),5, 20));
-	Base::Add(new Enemy(CVector3D(-51.239445, -0.033387, 21.382809),5, 20));
-	Base::Add(new Enemy(CVector3D(-81.536591, 0.241746, 31.737028),5, 20));
-	Base::Add(new Enemy(CVector3D(-79.510712, 0.168247, 35.478909
-	),5, 20));
-	Base::Add(new Enemy(CVector3D(-76.404968, 0.300559, 40.618176),5, 20));
-*/
+	
+	
+
 
 	Base::Add(new Camera());
-	Base::Add(new Weapon(false, CVector3D(0, -1, 0),5.0f));
-
-	Base::Add(new Weapon(false, CVector3D(0, -1, 1), 5.0f));
-
-	Base::Add(new Weapon(false, CVector3D(0, -1, 2), 5.0f));
-
-	Base::Add(new Weapon(false, CVector3D(0, -1, 3), 5.0f));
-
-	Base::Add(new Weapon(false, CVector3D(2, -1, 3), 5.0f));
-
-
-	Base::Add(new Weapon(false, CVector3D(3.5, -1.3, 103), 5.0f));
-	Base::Add(new Weapon(false, CVector3D(0, -3.8, 0),20.0f));
-	Base::Add(new Item(false, CVector3D(0, -3.8, -2),30));
-	Base::Add(new Sellpoint(CVector3D(0, -1.0, 0)));
-	Base::Add(new BuyPoint(CVector3D(2, -1.0, 0)));
+	//Base::Add(new Weapon(false, CVector3D(0, -3.8, 0),20.0f));
+	//Base::Add(new Item(false, CVector3D(0, -3.8, -2),30));
 	Base::Add(new Field(FieldId));
 
 	CInput::ShowCursor(false);
@@ -125,6 +103,7 @@ Game::Game(int FieldId) :Base(eScene)
 Game::~Game()
 {
 
+	SOUND("‰¹Šy")->Stop();
 }
 
 void Game::Update()
@@ -134,7 +113,7 @@ void Game::Update()
 		sunset = max(sunset - 0.001f, 0);
 	}
 
-	sunset = max(sunset - 0.000005f, 0);
+	sunset = max(sunset - 0.00001f, 0);
 
 	glClearColor(0.0 * sunset, 0.1 * sunset, 0.1 * sunset, 1.0);
 
@@ -166,12 +145,24 @@ if (ui)
 
 void Game::Draw()
 {
-	
-	if (!Base::FindObject(eEnemy))
+	int sellcount=0;
+	Field* field = dynamic_cast<Field*>(Base::FindObject(eField));
+	if (field) {
+		sellcount=field->GetSellCount();
+	}
+	if ((m_fieldID==0 && sellcount) || m_fieldID == 1 && m_dragonCount <= 0)
 	{
 		FONT_T()->Draw(0, 128, 1, 1, 1, "Clear");
 		m_img.Draw();
+		if (PUSH(CInput::eMouseL)) {
+			if (!m_kill) {
+				KillALL();
+				Base::Add(new Title);
+			}
+
+		}
 	}
+
 
 	NavManager::Instance()->Render();
 

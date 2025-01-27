@@ -7,6 +7,7 @@ private:
 	CVideo* m_video;
 	int m_step;
 	float m_displayProgress; //i’»—¦‚ğ‰Â‹‰»
+	bool m_showCursor;
 
 public:
 	CFont m_font;

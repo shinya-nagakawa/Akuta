@@ -452,9 +452,24 @@ bool CVideoTextrue::isEnd()
 
     return false;
 }
+static void LoadDLL(const char* dllfile) {
 
+    if (HMODULE hModule = GetModuleHandle(dllfile))
+        return;
+    if (HMODULE hDll = LoadLibrary(dllfile))
+        return;
+    else
+        printf("%sƒ[ƒhŽ¸”s\n", dllfile);
+}
 CVideo::CVideo(const char* filename)
 {
+    LoadDLL("avutil-57.dll");
+    LoadDLL("avdevice-59.dll");
+    LoadDLL("avfilter-8.dll");
+    LoadDLL("avcodec-59.dll");
+    LoadDLL("avformat-59.dll");
+    LoadDLL("swscale-6.dll");
+    LoadDLL("swresample-4.dll");
     mp_texture = mp_video_texture = new CVideoTextrue(filename);
     m_width = mp_video_texture->m_width;
     m_height = mp_video_texture->m_height;

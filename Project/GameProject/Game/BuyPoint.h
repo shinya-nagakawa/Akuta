@@ -11,6 +11,7 @@ public:
 	int count;
 	int Speedcount;
 	bool buyflag;
+	static bool curflag;
 
 	void Update();
 	void Render();

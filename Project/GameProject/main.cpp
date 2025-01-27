@@ -49,15 +49,6 @@ void MainLoop(void) {
 	Base::UpdateALL();
 	Base::CollisionALL();
 
-	CSound::GetInstance()->UpdateListener();
-
-	if (PUSH(CInput::eButton1)) {
-		SOUND("足音")->Play();
-	}
-	if (PUSH(CInput::eButton2)) {
-		SOUND("足音")->Play(false,true, EFX_REVERB_PRESET_CAVE);
-	}
-
 	
 	if (HOLD(CInput::eButton10)) {
 		sunset = max(sunset - 0.001f, 0);
@@ -95,7 +86,7 @@ void Init(void)
 
 	glEnable(GL_ALPHA_TEST);
 
-	CFPS::SetFPS(DEFAULT_FPS);
+	CFPS::SetFPS(0);
 	//フレーム制御初期化
 	CFPS::Init();
 	//ボタンの設定
@@ -204,7 +195,6 @@ void Init(void)
 	//Base::Add(new Game());
 	Base::Add(new Title());
 	//SOUND("タイトル音楽")->Volume(0.0);
-	SOUND("タイトル音楽")->Play(true);
 	
 	
 	
@@ -277,10 +267,10 @@ int __main(int* argcp, char** argv) {
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	//　.dllのパス指定
-	//char path[256];
-	//GetCurrentDirectory(256, path);
-	//strcat_s(path, 255, "\\dll");
-	//SetDllDirectory(path);
+	char path[256];
+	GetCurrentDirectory(256, path);
+	strcat_s(path, 255, "\\dll");
+	SetDllDirectory(path);
 
 	//OpenGL4.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

@@ -1,0 +1,3 @@
+cd C:\Users\user\Downloads\Akuta\Project\lib\x64\Release
+dumpbin /directives OpenAL32.lib
+doskey /h > cmd.txt

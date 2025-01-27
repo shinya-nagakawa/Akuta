@@ -3,6 +3,7 @@
 #include "Spider.h"
 #include "Player.h"
 #include "GreenDragon.h"
+#include "Game/Camera.h"
 
 Sellpoint::Sellpoint(const CVector3D& pos): Carry(eSellpoint),m_totalEarnings(0.0f), m_isSellFrag(false),
 m_showEarnings(false), m_displayDuration(0.0f), m_elapsedDisplayTime(0.0f), m_displayedEarnings(0.0f)
@@ -60,12 +61,7 @@ void Sellpoint::Update()
 
 void Sellpoint::Render()
 {
-	m_lineS = m_pos + CVector3D(0, 2.0f - m_rad, 0);
-	m_lineE = m_pos + CVector3D(0, m_rad, 0);
-	//Utility::DrawOBB(m_obb, CVector4D(1, 1, 0, 0.5));
-
-	Utility::DrawCapsule(m_lineS, m_lineE, m_rad, CVector4D(0, 1, 0, 0.5));
-
+	
 	 if (m_showEarnings) 
 	 {
         std::wstring totalText = L"総売却金額: " + std::to_wstring(static_cast<int>(m_displayedEarnings)) + L" G";
@@ -74,87 +70,157 @@ void Sellpoint::Render()
             CVector3D(1.0f, 1.0f, 1.0f),        // 文字色
             10);                                // パディング
     }
+
+     // カプセルを描画
+     m_lineS = m_pos + CVector3D(0, 2.0f - m_rad, 0);
+     m_lineE = m_pos + CVector3D(0, m_rad, 0);
+     Utility::DrawCapsule(m_lineS, m_lineE, m_rad, CVector4D(0, 1, 0, 0.5));
+
+     /*
+     // カプセルの真上の位置（ワールド座標）
+     CVector3D textWorldPos = m_pos + CVector3D(0, 2.5f, 0); // 高さを調整
+
+     // カメラのインスタンスを取得
+     Camera* camera = Camera::Instance();
+     if (!camera) return; // カメラが存在しない場合は何もしない
+
+     // カメラの行列を取得
+     CMatrix viewMatrix = camera->GetViewMatrix();
+     CMatrix projectionMatrix = camera->GetProjectionMatrix();
+
+     // ワールド座標をスクリーン座標に変換
+     CVector4D worldPos4(textWorldPos.x, textWorldPos.y, textWorldPos.z, 1.0f);
+     CVector4D screenPos = projectionMatrix * (viewMatrix * worldPos4);
+
+     // スクリーン座標を正規化
+     if (screenPos.w <= 0.0f) return; // 背面にある場合は表示しない
+     screenPos.x /= screenPos.w;
+     screenPos.y /= screenPos.w;
+     screenPos.z /= screenPos.w;
+
+     // スクリーン座標をピクセル単位に変換
+     int screenX = static_cast<int>((screenPos.x * 0.5f + 0.5f) * SCREEN_WIDTH);
+     int screenY = static_cast<int>((-screenPos.y * 0.5f + 0.5f) * SCREEN_HEIGHT);
+
+     // === 修正: カメラの上下移動で文字が飛ばないようにする ===
+     // カプセルの位置が画面外なら表示しない
+     if (screenX < 0 || screenX > SCREEN_WIDTH || screenY < 0 || screenY > SCREEN_HEIGHT) return;
+
+     // テキストを描画
+     const char* message = isInside ? "売却可能" : "売却不可";
+     FONT_T()->Draw(screenX, screenY, 1.0f, 1.0f, 1.0f, message);*/
 }
 
 void Sellpoint::Collision(Base* b)
 {
-	switch (b->GetType())
-	{
-	case ePlayer:
-		if (Player* player = dynamic_cast<Player*>(b))
-		{
-			if (!Base::FindObject(eEnemy))return;
-			
-				//カプセル同士の衝突
-				if (CCollision::CollisionCapsule(player->m_lineS, player->m_lineE, player->m_rad,
-					m_lineS, m_lineE, m_rad))
-				{
-					FONT_T()->Draw(1500, 750, 1.0f, 1.0f, 1.0f, "気絶した敵を落とし");
-					FONT_T()->Draw(1500, 850, 1.0f, 1.0f, 1.0f, "クリックで売却");
-					
-					if (PUSH(CInput::eMouseL)) {
-						m_isSellFrag = true;
-					}
-					else {
-						m_isSellFrag = false;
-					}
-				}
-		}
-		break;
-	case eEnemy:
-		//敵と売却地点
-	
-		if (Enemy* enemy = dynamic_cast<Enemy*>(b))
-			//カプセル同士の衝突
-			if (CCollision::CollisionCapsule(enemy->m_lineS, enemy->m_lineE, enemy->m_rad,
-				m_lineS, m_lineE, m_rad))
-		{	
-			//敵のHPが0の時売却できる
-			if (enemy->GetHP() <= 0&& m_isSellFrag&&enemy->m_stateItem !=e_Equip)
-			{
-				//	printf("baikyaku\n");
-					enemy->SetKill();
-					int earnings1 = 300;
-					enemy->GiveMoney(earnings1);
-					TriggerEarnings(300);
-				//	printf("%s", enemy);
-			}
-		}if (Spider* spider = dynamic_cast<Spider*>(b))
-			//カプセル同士の衝突
-			if (CCollision::CollisionCapsule(spider->m_lineS, spider->m_lineE, spider->m_rad,
-				m_lineS, m_lineE, m_rad))
-			{
+    isInside = false;
 
-				//敵のHPが0の時売却できる
-				if (spider->GetHP() <= 0 && m_isSellFrag &&spider->m_stateItem != e_Equip)
-				{
-					//printf("baikyaku\n");
-					spider->SetKill();
-					int earnings2 = 450;
-					spider->GiveMoney(earnings2);
-					TriggerEarnings(450);
-					//printf("%s", spider);
-				}
-			}
-		if (GreenDragon* dragon = dynamic_cast<GreenDragon*>(b))
-			//カプセル同士の衝突
-			if (CCollision::CollisionCapsule(dragon->m_lineS, dragon->m_lineE, dragon->m_rad,
-				m_lineS, m_lineE, m_rad))
-			{
+    switch (b->GetType())
+    {
+    case ePlayer:
+        if (Player* player = dynamic_cast<Player*>(b))
+        {
+            if (!Base::FindObject(eEnemy)) return;
 
-				//敵のHPが0の時売却できる
-				if (dragon->GetHP() <= 0 && m_isSellFrag && dragon->m_stateItem != e_Drop)
-				{
-					//printf("baikyaku\n");
-					dragon->SetKill();
-					int earnings3 = 1050;
-					dragon->GiveMoney(earnings3);
-					TriggerEarnings(1050);
-					//printf("%s", spider);
-				}
-			}
-	break;
-	}
+            // プレイヤーがカプセル内にいる場合
+            if (CCollision::CollisionCapsule(player->m_lineS, player->m_lineE, player->m_rad,
+                m_lineS, m_lineE, m_rad))
+            {
+                FONT_T()->Draw(1500, 750, 1.0f, 1.0f, 1.0f, "気絶した敵を落とし");
+                FONT_T()->Draw(1500, 850, 1.0f, 1.0f, 1.0f, "クリックで売却");
+
+                // マウスクリック時に売却フラグを立てる
+                if (1/*PUSH(CInput::eMouseL)*/)
+                {
+                    m_isSellFrag = true;
+                }
+                else
+                {
+                    m_isSellFrag = false;
+                }
+            }
+        }
+        break;
+
+    case eEnemy:
+        // 敵（Enemy, Spider, GreenDragon）がカプセル内にいるかチェック
+        if (Enemy* enemy = dynamic_cast<Enemy*>(b))
+        {
+            if (IsInsideCapsule(enemy))
+            {
+                if (enemy->m_stateItem != e_Equip && enemy->m_stateItem != e_PickUp)
+                {
+                    isInside = true;
+                }
+                else 
+                {
+                    isInside = false;
+                }
+                if (enemy->GetHP() <= 0 && m_isSellFrag && enemy->m_stateItem != e_Equip)
+                {
+                    enemy->SetKill();
+                    int earnings1 = 300;
+                    enemy->GiveMoney(earnings1);
+                    TriggerEarnings(earnings1);
+                }
+            }
+        }
+        if (Spider* spider = dynamic_cast<Spider*>(b))
+        {
+            if (IsInsideCapsule(spider))
+            {
+                if (spider->m_stateItem != e_Equip && spider->m_stateItem != e_PickUp)
+                {
+                    isInside = true;
+                }
+                else 
+                {
+                    isInside = false;
+                }
+                if (spider->GetHP() <= 0 && m_isSellFrag && spider->m_stateItem != e_Equip)
+                {
+                    spider->SetKill();
+                    int earnings2 = 450;
+                    spider->GiveMoney(earnings2);
+                    TriggerEarnings(earnings2);
+                }
+            }
+        }
+        if (GreenDragon* dragon = dynamic_cast<GreenDragon*>(b))
+        {
+            if (IsInsideCapsule(dragon))
+            {
+                if (dragon->m_stateItem != e_Equip && dragon->m_stateItem != e_PickUp)
+                {
+                    isInside = true;
+                }
+                else
+                {
+                    isInside = false;
+                }
+                if (dragon->GetHP() <= 0 && m_isSellFrag && dragon->m_stateItem != e_Equip)
+                {
+                    dragon->SetKill();
+                    int earnings3 = 1050;
+                    dragon->GiveMoney(earnings3);
+                    TriggerEarnings(earnings3);
+                }
+            }
+        }
+        break;
+    }
+
+    // カプセル内に敵がいる場合のメッセージ表示
+    if (isInside)
+    {
+        FONT_T()->Draw(1500, 900, 1.0f, 1.0f, 1.0f, "敵が売却可能な位置にいます");
+    }
+}
+
+// カプセル内にオブジェクトがいるかを判定する共通関数
+bool Sellpoint::IsInsideCapsule(Base* b)
+{
+    return CCollision::CollisionCapsule(b->m_lineS, b->m_lineE, b->m_rad, m_lineS, m_lineE, m_rad);
 }
 
 void Sellpoint::TriggerEarnings(int earnings)

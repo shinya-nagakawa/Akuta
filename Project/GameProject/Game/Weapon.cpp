@@ -9,11 +9,11 @@ Weapon::Weapon(bool Equippsed,const CVector3D& pos,float weight) :Carry(eWeapon)
 	m_weight = weight;
 	m_pos = pos;
 	sword_model = COPY_RESOURCE("Sword", CModelObj);
-	m_rad = 0.1;
+	m_rad = 0.3;
 	m_stateItem = Equippsed ? e_Equip : e_Drop;
 
 	m_item_id = 0;
-	
+	m_effect_time = 0;
 }
 
 Weapon::~Weapon()
@@ -55,7 +55,7 @@ void Weapon::Update()
 	{
 		//d—Í—Ž‰º
 		m_pos.y += m_vec.y;
-		m_vec.y -= GRAVITY;
+		m_vec.y -= GRAVITY/2;
 	}
 	
 }
@@ -69,6 +69,8 @@ void Weapon::Render()
 	bool m_isAttacking = Player::Instance()->GetAttack();
 
 		CMatrix player_bone = player->GetModel()->GetFrameMatrix(38);
+		CMaterial* mat = sword_model.GetMaterial(0);
+		mat->m_emissive = CVector3D(0, 0, 0);
 		sword_matrix = player_bone
 			* CMatrix::MTranselate(0, 15, 0)
 			* CMatrix::MRotationX(DtoR(90))
@@ -85,13 +87,16 @@ void Weapon::Render()
 			m_lineS = (sword_matrix * CMatrix::MTranselate(0, 0, 20)).GetPosition();
 			m_lineE = (sword_matrix * CMatrix::MTranselate(0, 0, 150)).GetPosition();
 			NotifyAttack();
-		//	Utility::DrawCapsule(m_lineS, m_lineE, m_rad, CVector4D(1, 0, 0, 0.5));
+			//Utility::DrawCapsule(m_lineS, m_lineE, m_rad, CVector4D(1, 0, 0, 0.5));
 		}
 	}
 	else if(m_stateItem == e_Drop)
 	{
 
-		
+		m_effect_time += 0.01f;
+		CMaterial* mat = sword_model.GetMaterial(0);
+		float c = abs(sin(m_effect_time));
+		mat->m_emissive = CVector3D(c*0.7, c*0.7, c*0.4);
 		sword_matrix = 
 			 CMatrix::MTranselate(m_pos)
 			* CMatrix::MRotation(m_rot)

@@ -5,7 +5,7 @@
 TutorialManager::TutorialManager(const std::vector<std::wstring>& steps, float charDisplaySpeed)
     : m_steps(steps), m_currentStep(0), m_isActive(false), m_charDisplaySpeed(charDisplaySpeed),
     m_charCount(0), m_elapsedTime(0.0f), m_displayedText(L""),
-    m_face(L":)"), m_faceTimer(0.0f), m_faceSwitchSpeed(0.045f), m_isTyping(false), m_faceIndex(0),
+    m_face(L":)"), m_faceTimer(0.0f), m_faceSwitchSpeed(0.085f), m_isTyping(false), m_faceIndex(0),
     m_windowVisible(false), m_windowDelay(1.5f), m_elapsedWindowTime(0.0f),
     m_isSlidingIn(false), m_isSlidingOut(false), m_slideProgress(0.0f), m_slideDuration(1.0f) {}
 
@@ -21,6 +21,8 @@ void TutorialManager::Start() {
 }
 
 void TutorialManager::Update(float deltaTime) {
+
+
     // ディレイ中はスライドインを開始しない
     if (!m_isSlidingIn && !m_windowVisible) {
         m_elapsedWindowTime += deltaTime; // ディレイ時間を加算
@@ -50,7 +52,8 @@ void TutorialManager::Update(float deltaTime) {
             m_isSlidingOut = false;
             m_windowVisible = false; // ウィンドウ非表示
             m_isActive = false;      // チュートリアル終了
-        }
+        } 
+        SOUND("声")->Stop();
         return; // スライドアウト中は他の処理をスキップ
     }
 
@@ -71,6 +74,7 @@ void TutorialManager::Update(float deltaTime) {
             m_isTyping = false;
             SOUND("声")->Stop();
         }
+       
 
         // 喋っている表情の切り替え
         if (m_isTyping) {
@@ -98,8 +102,10 @@ void TutorialManager::Update(float deltaTime) {
 }
 
 void TutorialManager::Render() {
-    // 描画を停止する条件を調整
-    if (!m_isSlidingIn && !m_isSlidingOut && !m_windowVisible) return;
+    // ウィンドウの表示条件を調整
+    if (!m_windowVisible && !m_isSlidingIn && !m_isSlidingOut) {
+        return;
+    }
 
     Renderer renderer;
 
@@ -123,7 +129,12 @@ void TutorialManager::Render() {
     // 顔アイコンの描画
     int faceX = windowX + 20;
     int faceY = windowY + (windowHeight / 2) - 40;
-    renderer.DrawText(m_face.c_str(), faceX, faceY, CVector3D(1.0f, 1.0f, 1.0f));
+    renderer.DrawText(m_face.c_str(), faceX, faceY, CVector3D(1.0f, 1.0f, 1.0f), 48);
+
+    // 右上に「Zキーで進む」を描画
+    int promptX = windowX + windowWidth - 130; // ウィンドウ右端より少し内側
+    int promptY = windowY + 30;                // ウィンドウ上端から少し下
+    renderer.DrawText(L"Zキーで進む", promptX, promptY, CVector3D(1.0f, 1.0f, 1.0f), 20); // フォントサイズ20
 }
 
 void TutorialManager::NextStep() {
@@ -150,3 +161,20 @@ void TutorialManager::NextStep() {
 bool TutorialManager::IsFinished() const {
     return !m_isActive; // アクティブでないなら完了しているとみなす
 }
+
+/*
+void TutorialManager::ForceDisplayMessage(const std::wstring& message) {
+    // 現在のチュートリアル状態をバックアップ
+    if (!m_isActive) {
+        return; // チュートリアルが終了している場合は何もしない
+    }
+
+    m_isTyping = false;           // タイピングを終了
+    m_charCount = 0;              // 表示文字数をリセット
+    m_displayedText = L"";        // 表示中の文字列をリセット
+    m_steps = { message };        // 現在のメッセージを一時的に置き換え
+    m_isSlidingIn = false;        // スライドインをリセット
+    m_isSlidingOut = false;       // スライドアウトを停止
+    m_windowVisible = true;       // ウィンドウを表示
+    m_slideProgress = 1.0f;       // ウィンドウの表示状態を保持
+}*/

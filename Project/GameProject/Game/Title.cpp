@@ -22,6 +22,11 @@ Title::Title() : Base(eTitle),m_displayProgress(0.0f)
     m_video->Play(true);
     m_step = 0;
     m_select = 0;
+
+    while (ShowCursor(true) < 0);
+    CInput::ShowCursor(true);
+    SOUND("タイトル音楽")->Play(true);
+
 }
 
 int Title::m_select = 0;
@@ -53,6 +58,16 @@ void Title::Update()
         }
         b->BlackShow(120.0f);
     }*/
+
+    if (m_step == 1) {
+        // 他の画面に遷移する際にカーソルを非表示に
+        if (m_showCursor) {
+            while (ShowCursor(false) >= 0);
+            CInput::ShowCursor(false);  // カーソルを非表示
+            m_showCursor = false;  // フラグを更新
+
+        }
+    }
 }
 
 void Title::Draw()
@@ -62,6 +77,14 @@ void Title::Draw()
 
     switch (m_step)
     {
+
+        if (!m_showCursor) {
+            // カーソルを表示
+            while (ShowCursor(true) < 0);
+            CInput::ShowCursor(true);
+            m_showCursor = true;  // フラグを更新
+        }
+
     case 0:
         // ImGui新しいフレームの開始
         ImGui_ImplOpenGL2_NewFrame();
@@ -71,7 +94,7 @@ void Title::Draw()
         // タイトルウィンドウ
         ImGui::SetNextWindowPos(ImVec2(800, 700), ImGuiCond_Always); // 位置を固定
         ImGui::SetNextWindowSize(ImVec2(300, 250), ImGuiCond_Always); // サイズを固定
-        ImGui::Begin("", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+        ImGui::Begin("", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse| ImGuiWindowFlags_NoScrollbar| ImGuiWindowFlags_NoTitleBar);
         
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.0f, 0.2f, 0.7f)); // 暗い紫
@@ -85,6 +108,12 @@ void Title::Draw()
         // ゲーム開始ボタン
         if (ImGui::Button("Start Game", ImVec2(200, 50))) // 幅200、高さ50
         {
+
+            // 遷移時にカーソルを非表示
+            while (ShowCursor(false) >= 0);
+            CInput::ShowCursor(false);
+            m_showCursor = false;  // フラグを更新
+
             m_select = 1;
             m_step = 1;
 
@@ -92,6 +121,12 @@ void Title::Draw()
 
         if (ImGui::Button("Tutorial", ImVec2(200, 50)))
         {
+
+            // 遷移時にカーソルを非表示
+            while (ShowCursor(false) >= 0);
+            CInput::ShowCursor(false);
+            m_showCursor = false;  // フラグを更新
+
             m_select = 0;
             m_step = 1;
             

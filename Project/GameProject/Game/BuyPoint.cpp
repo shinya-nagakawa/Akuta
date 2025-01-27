@@ -13,7 +13,14 @@
 #include "../imgui/imgui_impl_opengl2.h"
 #include "../imgui/imgui_ja_gryph_ranges.h"
 
-
+class MoneyLabel :public UIBase {
+public:
+	void Draw() {
+		int money = Player::Instance()->GetPlayerMoney();
+		ImGui::Text(u8"所持金：%d円", money);
+	}
+};
+bool BuyPoint::curflag = false;
 BuyPoint::BuyPoint(const CVector3D& pos) :Base(eBuypoint)
 {
 	m_rad = 0.6f;
@@ -29,11 +36,11 @@ BuyPoint::BuyPoint(const CVector3D& pos) :Base(eBuypoint)
 	UIBase* window = new UIWindow(m_ui_frame, u8"Option", CVector2D(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 	//各種UI部品はwindowの子として生成
 	//new UISliderFloat(window, u8"SliderFloat", &m_member_float, 0.1f, 5.0f);
-
+	window->AddChild(new MoneyLabel());
 	
-	new UIButton(window, u8"剣　購入50円", []() {
+	new UIButton(window, u8"剣　購入50円",  [this]() {
 		
-		if (Player::Instance()->GetPlayerMoney() >= -100) {
+		if (Player::Instance()->GetPlayerMoney() >= 50) {
 			Base* b = Base::FindObject(ePlayer);
 			Player* player = dynamic_cast<Player*>(b);
 			//printf("kounyuu\n");
@@ -42,7 +49,7 @@ BuyPoint::BuyPoint(const CVector3D& pos) :Base(eBuypoint)
 			//PlayerMoneyMax -= 50;
 
 			//新しい武器を生成
-			Base::Add(new Weapon(false, CVector3D(2, -1.0, 0), 15.0f));
+			Base::Add(new Weapon(false, player->m_pos+CVector3D(0,0.8f,0), 15.0f));
 		}
 		});
 
@@ -57,31 +64,34 @@ BuyPoint::BuyPoint(const CVector3D& pos) :Base(eBuypoint)
 				if (g == __nullptr)
 					Base::Add(g = new GreenFilter());
 				g->GreenShow(30.0f);
-				player->Heal(10);
+				player->Heal(30);
 			}
 		}
 		});
 
-	new UIButton(window, u8"スピードアップ　購入300円", []() {
-		if (Player::Instance()->GetPlayerMoney() >= 300  /* && Speedcount <= 2*/)
+	new UIButton(window, u8"スピードアップ　購入500円", []() {
+		if (Player::Instance()->GetPlayerMoney() >= 500  /* && Speedcount <= 2*/)
 		{
 			Base* b = Base::FindObject(ePlayer);
 			Player* player = dynamic_cast<Player*>(b);
-			player->Pay(300);
+			GreenFilter* g = dynamic_cast<GreenFilter*>(Base::FindObject(eRedFilter));
+			if (g == __nullptr)
+				Base::Add(g = new GreenFilter());
+			player->Pay(500);
 			player->MovespeedUp(0.2);
 			//Speedcount += 1;
 		}
 		});
 
-	new UIButton(window, u8"ジェットパック　購入2000円", []() {
-		if (Player::Instance()->GetPlayerMoney() >= -4000  /* && Speedcount <= 2*/)
-		{
-			Base* b = Base::FindObject(ePlayer);
-			Player* player = dynamic_cast<Player*>(b);
-			player->Pay(2000);
-			Base::Add(new Item(false, CVector3D(2, -1.0, 0), 30));
-		}
-		});
+	//new UIButton(window, u8"ジェットパック　購入4000円", []() {
+	//	if (Player::Instance()->GetPlayerMoney() >= -4000  /* && Speedcount <= 2*/)
+	//	{
+	//		Base* b = Base::FindObject(ePlayer);
+	//		Player* player = dynamic_cast<Player*>(b);
+	//		player->Pay(2000);
+	//		Base::Add(new Item(false, CVector3D(2, -1.0, 0), 30));
+	//	}
+	//	});
 
 	//new UIButton(window, u8"自身のメンバ関数", std::bind(&UI::Func, this));
 
@@ -94,17 +104,36 @@ BuyPoint::~BuyPoint()
 
 void BuyPoint::Update()
 {
-	
-	//CInput::ShowCursor(buyflag);
+	//複数のBoyPointがあっても一度だけカーソル表示非表示の処理する
+	if (!curflag) {
+		curflag = true;
+		bool curshow = false;
+		if (FindObject(ePlayer))
+		{
+			auto list = Base::FindObjects(eBuypoint);
+			for (auto& b : list) {
+				if (BuyPoint* bp = dynamic_cast<BuyPoint*>(b))
+					if (bp->buyflag)
+						curshow = true;
+			}
+			// フラグに基づいてカーソルの表示を更新
+			if (curshow) {
+				CInput::ShowCursor(true);
+			}
+			else {
+				CInput::ShowCursor(false);
+			}
+		}
+	}
 
 	PlayerMoneyMax = Player::Instance()->GetPlayerMoney();
-	
+
 }
 
 void BuyPoint::Render()
 {
 	
-
+	curflag = false;
 	m_lineS = m_pos + CVector3D(0, 2.0f - m_rad, 0);
 	m_lineE = m_pos + CVector3D(0, m_rad, 0);
 	//Utility::DrawOBB(m_obb, CVector4D(1, 1, 0, 0.5));
@@ -125,13 +154,8 @@ void BuyPoint::Collision(Base* b)
 			if (CCollision::CollisionCapsule(player->m_lineS, player->m_lineE, player->m_rad,
 				m_lineS, m_lineE, m_rad))
 			{
-				if (buyflag == false)
-				{
-					CInput::ShowCursor(true);
-				}
 
 				buyflag = true;
-			
 				//	FONT_T()->Draw(1500, 750, 1.0f, 1.0f, 1.0f, "Ekeyで剣を購入 50enn" );
 				//	FONT_T()->Draw(1500, 788, 1.0f, 1.0f, 1.0f, "FkeyでHPを回復 100enn");
 				//	FONT_T()->Draw(1500, 826, 1.0f, 1.0f, 1.0f, "Rkeyで素早さUP 300enn");
@@ -140,14 +164,7 @@ void BuyPoint::Collision(Base* b)
 				//		FONT_T()->Draw(1500, 864, 1.0f, 1.0f, 1.0f, "Qkeyでジャンプ解放 1000enn");
 				//	}
 
-			}
-			else
-			{
-				if (buyflag == true)
-				{
-					CInput::ShowCursor(false);
-				}
-
+			} else {
 				buyflag = false;
 			}
 

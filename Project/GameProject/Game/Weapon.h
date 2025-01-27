@@ -9,6 +9,7 @@ private:
 	//•Ší‚Ìs—ñ
 	CMatrix sword_matrix;
 	float m_weight;
+	float m_effect_time;
 	
 
 public:

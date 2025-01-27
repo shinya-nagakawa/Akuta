@@ -17,7 +17,7 @@
 #include <GLFW/glfw3.h>
 //#define FREEGLUT_STATIC
 //#include <freeglut.h>
-//#define AL_LIBTYPE_STATIC
+#define AL_LIBTYPE_STATIC
 //#include <AL/alut.h>
 namespace GL {
 	extern GLFWwindow* window;
@@ -39,8 +39,6 @@ namespace GL {
 	void ChangeFullScreen(bool full,int monitor_no=0);
 }
 #ifdef _DEBUG
-#else 
-#ifndef NDEBUG
+#else
 #define NDEBUG
-#endif
 #endif

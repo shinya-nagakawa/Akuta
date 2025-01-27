@@ -21,7 +21,7 @@ public:
         int padding = 10);
 
     // テキスト描画
-    static void DrawText(const wchar_t* text, int x, int y, const CVector3D& color); // ワイド文字対応
+    static void DrawText(const wchar_t* text, int x, int y, const CVector3D& color, int fontSize); // ワイド文字対応
 
     // テクスチャ描画
     static void DrawTexture(CTexture* texture, int x, int y, int width = 0, int height = 0);
@@ -33,9 +33,10 @@ public:
     static void Initialize();
     static void Shutdown();
     void DrawTestRect();
+    void DrawWorldText(const CVector3D& worldPos, float r, float g, float b, const char* text);
 private:
     CImage m_img;
-
+    CVector3D textWorldPos;
     float m_duration; //持続時間
     float m_timer;
 };

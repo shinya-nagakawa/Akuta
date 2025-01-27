@@ -12,12 +12,19 @@ extern "C" {
 }
 
 #pragma comment(lib, "avutil.lib")
+#pragma comment(linker, "/delayload:avutil-57.dll")
 #pragma comment(lib, "avdevice.lib")
+#pragma comment(linker, "/delayload:avdevice-59.dll")
 #pragma comment(lib, "avfilter.lib")
+#pragma comment(linker, "/delayload:avfilter-8.dll")
 #pragma comment(lib, "avcodec.lib")
+#pragma comment(linker, "/delayload:avcodec-59.dll")
 #pragma comment(lib, "avformat.lib")
+#pragma comment(linker, "/delayload:avformat-59.dll")
 #pragma comment(lib, "swscale.lib")
+#pragma comment(linker, "/delayload:swscale-6.dll")
 #pragma comment(lib, "swresample.lib")
+#pragma comment(linker, "/delayload:swresample-4.dll")
 
 class CVideoTextrue : public CTexture {
     struct VideoReaderState {

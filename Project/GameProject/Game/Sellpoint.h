@@ -19,6 +19,8 @@ private:
 	float m_displayedEarnings;
 	bool soundPlayed;
 	bool buyPlayed;
+	bool isInside;
+
 
 public:
 	Sellpoint(const CVector3D& pos);
@@ -26,6 +28,7 @@ public:
 	void Render();
 	void Collision(Base*b);
 	int GetTotalEarnings() const { return m_totalEarnings; }
+	bool IsInsideCapsule(Base* b);
 	void TriggerEarnings(int earnings);
 	 
 };

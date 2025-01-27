@@ -5,6 +5,7 @@
 #include "Effekseer/EffekseerEffect.h"
 #include "NavNode.h"
 #include "NavManager.h"
+#include "Field.h"
 
 #define MOVE_RANGE_MIN -50.0f
 #define MOVE_RANGE_MAX 50.0f
@@ -55,6 +56,15 @@ Enemy::Enemy(const CVector3D& pos,int enemy_Hp,float weight,EnemyRole role ) :En
 	m_navNode->SetNodeColor(CVector3D(0.125f, 0.25f, 1.0f));
 
 	m_item_id = 1;
+}
+
+Enemy::~Enemy()
+{
+	// SellCount をカウントアップ
+	Field* field = dynamic_cast<Field*>(Base::FindObject(eField));
+	if (field) {
+		field->IncrementSellCount();
+	}
 }
 
 
@@ -108,7 +118,7 @@ void Enemy::Idle()
 	else
 	{
 		//Move()
-		//Wander();
+		Wander();
 	}
 
 	//経路探索が完成するまでコメント化
@@ -503,13 +513,13 @@ void Enemy::GiveMoney(int Value)
 bool Enemy::IsFoundPlayer() const
 {
 
-	
+	/*
 	//強制発見モードがオンなら無条件でプレイヤーを発見
 	if (m_forceDetectPlayer)
 	{
 		return true;
-	}
-	/*
+	}*/
+	
 	if (mp_player == nullptr) return false;
 
 	CVector3D playerPos = mp_player->m_pos;
@@ -532,7 +542,7 @@ bool Enemy::IsFoundPlayer() const
 		return false;
 	}
 
-	return true;*/
+	return true;
 }
 
 

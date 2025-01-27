@@ -3,6 +3,7 @@
 #include "PoisonBreath.h"
 #include "Effekseer/EffekseerEffect.h"
 #include "Game/Camera.h"
+#include "Game/Game.h"
 
 GreenDragon::GreenDragon(CVector3D& pos, int enemy_hp, float weight,float moveSpeed) :Enemy_Base(pos,enemy_hp,weight,moveSpeed)
 {
@@ -33,6 +34,10 @@ GreenDragon::GreenDragon(CVector3D& pos, int enemy_hp, float weight,float moveSp
 
 GreenDragon::~GreenDragon()
 {
+	if (Game* game = dynamic_cast<Game*>(Base::FindObject(eScene)))
+	{
+		game->m_dragonCount--;
+	}
 }
 
 void GreenDragon::Idle()
@@ -224,7 +229,7 @@ bool GreenDragon::CheckWallCollision(const CVector3D& dir)
 	CVector3D end = start + dir * 1.0f;
 
 	//カプセルの表示
-	Utility::DrawCapsule(start, end, m_rad, CVector4D(0, 1, 0, 0.5));
+	//Utility::DrawCapsule(start, end, m_rad, CVector4D(0, 1, 0, 0.5));
 
 	CVector3D hitPos;
 	CVector3D hitNormal;

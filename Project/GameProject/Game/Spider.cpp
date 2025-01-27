@@ -41,12 +41,16 @@ Spider::Spider(const CVector3D& pos, int enemy_Hp, float weight):Enemy_Base(pos,
 	m_rot_matrix.SetIndentity();
 
 	m_item_id = 2;
-	m_se_cnt = 0;
 
 }
 
 Spider::~Spider()
 {
+	// SellCount をカウントアップ
+	Field* field = dynamic_cast<Field*>(Base::FindObject(eField));
+	if (field) {
+		field->IncrementSellCount();
+	}
 }
 
 //移動等
@@ -102,7 +106,7 @@ void Spider::Idle()
 				m_pos += dir * currentSpeed;
 				m_model.ChangeAnimation(1); // 前進アニメーション
 				m_se_cnt++;
-				if (m_se_cnt % 16==0) {
+				if (m_se_cnt % 16 == 0) {
 					SOUND("足音")->Play3D(m_pos, CVector3D::zero, false, true, EFX_REVERB_PRESET_CAVE);
 				}
 
@@ -331,7 +335,7 @@ bool Spider::IsTouchingGround()
 	{
 		if (field->GetModel()->CollisionRay(&hitPos, &hitNormal, start, end))
 		{
-			Utility::DrawSphere(hitPos, 0.2f, CVector4D(1, 0, 0, 1)); // 衝突点を赤い球で描画
+			//Utility::DrawSphere(hitPos, 0.2f, CVector4D(1, 0, 0, 1)); // 衝突点を赤い球で描画
 			if (m_pos.y - m_rad > hitPos.y - 0.1f)
 			{
 				m_pos.y = hitPos.y + m_rad;
@@ -537,14 +541,14 @@ void Spider::RenderVision()
 		float rad = DtoR(angle) + m_rot.y; // 敵の回転に基づいて角度を調整
 		CVector3D dir = m_rot_matrix * CVector3D(sin(rad), 0, cos(rad));
 		CVector3D endPos = m_pos + dir * m_viewLength; // 視野範囲の先端
-		Utility::DrawLine(m_pos, endPos, visionColor);
+		//Utility::DrawLine(m_pos, endPos, visionColor);
 	}
 
 	// プレイヤーが視界内の場合、赤い線で描画
 	if (IsFoundPlayer())
 	{
 		CVector3D playerPos = mp_player->m_pos;
-		Utility::DrawLine(m_pos, playerPos, detectionColor);
+		//Utility::DrawLine(m_pos, playerPos, detectionColor);
 	}
 }
 

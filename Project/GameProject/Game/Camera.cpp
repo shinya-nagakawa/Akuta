@@ -32,6 +32,28 @@ Camera* Camera::Instance()
 	return ms_instance;
 }
 
+CMatrix Camera::GetViewMatrix() const
+{
+    // カメラの回転を反映
+    CMatrix rotationMatrix = CMatrix::MRotation(m_rot);
+    // カメラの位置を反映
+    CMatrix translationMatrix = CMatrix::MTranselate(-m_pos);
+    // 回転と位置を掛け合わせてビュー行列を作成
+    return rotationMatrix * translationMatrix;
+}
+
+CMatrix Camera::GetProjectionMatrix() const
+{
+    CMatrix projectionMatrix;
+    float fov = DtoR(45.0f);  // 視野角（45度）
+    float aspect = static_cast<float>(SCREEN_WIDTH) / SCREEN_HEIGHT; // アスペクト比
+    float nearPlane = 0.1f;   // ニアクリップ
+    float farPlane = 100.0f;  // ファークリップ
+
+    projectionMatrix.Perspective(fov, aspect, nearPlane, farPlane);
+    return projectionMatrix;
+}
+
 void Camera::Shake(float intensity, float duration) {
 	m_shakeIntensity = intensity;
 	m_shakeDuration = duration;

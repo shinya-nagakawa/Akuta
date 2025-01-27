@@ -158,15 +158,13 @@ public:
 	**/
 	static void SetMouseInside(bool f);
 
+
 	/*!
 		@brief	マウスカーソルの表示設定
 		@param	f		[in] true:表示　false:非表示
 		@retval	無し
 	**/
-	static void ShowCursor(bool f) {
-		 ::ShowCursor(f);
-		 ::ShowCursor(f);
-	}
+	static void ShowCursor(bool f);
 	
 	/*!
 		@brief	マウスホイールの変化量取得

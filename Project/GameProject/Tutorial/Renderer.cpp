@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Game/Camera.h"
 
 Renderer::Renderer() : m_duration(0.0f), m_timer(0.0)
 {
@@ -90,15 +91,19 @@ void Renderer::DrawTextWindow(int x, int y, int width, int height, const wchar_t
 }
 
 
-void Renderer::DrawText(const wchar_t* text, int x, int y, const CVector3D& color)
-{ 
+void Renderer::DrawText(const wchar_t* text, int x, int y, const CVector3D& color, int fontSize) {
     CFont* font = FONT_T();
     if (!font) {
-        font = CFont::CreateInstance("DefaultFont", "path/to/default/font.ttf", 16); // 必要に応じてフォントを初期化
+        // 必要に応じてフォントを初期化
+        font = CFont::CreateInstance("DefaultFont", "path/to/default/font.ttf", fontSize);
     }
 
-    font->SetFontSize(48); // フォントサイズを設定
-    font->Draw(x, y, color.x, color.y, color.z, text); // wchar_t* を描画
+    // フォントサイズを設定
+    font->SetFontSize(fontSize);
+
+    // テキストを描画
+    font->Draw(x, y, color.x, color.y, color.z, text);
+
     font->SetFontSize(32);
 }
 
@@ -162,4 +167,31 @@ void Renderer::DrawTestRect()
     m_img.SetSize(800, 150);          // 矩形のサイズを設定
     m_img.SetColor(0.0f, 0.0f, 0.0f, 0.7f); // 背景色（半透明の黒）を設定
     m_img.Draw();                     // 実際に描画
+}
+
+void Renderer::DrawWorldText(const CVector3D& worldPos, float r, float g, float b, const char* text)
+{
+    // カメラのインスタンスを取得
+    Camera* camera = Camera::Instance();
+
+    // カメラの行列を取得
+    CMatrix viewMatrix = camera->GetViewMatrix();
+    CMatrix projectionMatrix = camera->GetProjectionMatrix();
+
+    // ワールド座標をスクリーン座標に変換
+    CVector4D worldPos4(textWorldPos.x, textWorldPos.y, textWorldPos.z, 1.0f);
+    CVector4D screenPos = projectionMatrix * viewMatrix * worldPos4;
+
+    // スクリーン座標を正規化
+    if (screenPos.w <= 0.0f) return; // 背面にある場合は表示しない
+    screenPos.x /= screenPos.w;
+    screenPos.y /= screenPos.w;
+    screenPos.z /= screenPos.w;
+
+    // スクリーン座標をピクセル単位に変換
+    int screenX = static_cast<int>((screenPos.x * 0.5f + 0.5f) * SCREEN_WIDTH);
+    int screenY = static_cast<int>((-screenPos.y * 0.5f + 0.5f) * SCREEN_HEIGHT);
+
+    // テキストを描画
+    FONT_T()->Draw(screenX, screenY, r, g, b, text);
 }

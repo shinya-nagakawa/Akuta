@@ -16,55 +16,58 @@
 
 
 Player* Player::ms_instance = nullptr;
+// 初期位置を保存するための変数
+CVector3D initialPosition;
 
 Player::Player(const CVector3D& pos) :Base(ePlayer), m_carry(nullptr), m_gauge(nullptr), m_maxItems(4)
 {
-		ms_instance = this;
+	ms_instance = this;
 
-		// モデルと初期設定
-		m_model = GET_RESOURCE("vanguard", CModelA3M);
-		m_model->ChangeAnimation(0);
-		m_pos = pos;
+	// モデルと初期設定
+	m_model = GET_RESOURCE("vanguard", CModelA3M);
+	m_model->ChangeAnimation(0);
+	m_pos = pos;
+	initialPosition = pos;//初期位置を記録
 
-		// 初期ステータス
-		m_hp = m_hp_max = 100;
-		m_stamina = m_stamina_max = 100;
-		m_weight = 0.0f;
-		m_pushBackStrength = 0.25f;
-		move_speed = 1.0f;
-		BaseSpead = 0.010f;
-		m_rad = 0.4f;
+	// 初期ステータス
+	m_hp = m_hp_max = 100;
+	m_stamina = m_stamina_max = 100;
+	m_weight = 0.0f;
+	m_pushBackStrength = 0.25f;
+	move_speed = 1.0f;
+	BaseSpead = 0.010f;
+	m_rad = 0.4f;
 
-		m_jetpackFuel = 1000.0f;
-		m_jetpackForce = 0.005f;
+	m_jetpackFuel = 1000.0f;
+	m_jetpackForce = 0.005f;
 
-		// 状態フラグ
-		m_isGround = true;
-		m_isJump = true;
-		m_isWalking = false;
-		m_isAttacking = false;
-		m_isChargeing = false;
-		m_isKnockback = false;
+	// 状態フラグ
+	m_isGround = true;
+	m_isJump = true;
+	m_isWalking = false;
+	m_isAttacking = false;
+	m_isChargeing = false;
+	m_isKnockback = false;
 
-		m_footstepTimer = 0.0f;
-		m_footstepInterval = 0.5f;
+	m_footstepTimer = 0.0f;
+	m_footstepInterval = 0.5f;
 
-		// その他初期化
-		m_pushBackForce = CVector3D(0, 0, 0);
-		m_velocity = CVector3D(0, 0, 0);
-		m_friction = 0.85f;
+	// その他初期化
+	m_pushBackForce = CVector3D(0, 0, 0);
+	m_velocity = CVector3D(0, 0, 0);
+	m_friction = 0.85f;
 
-		// アニメーションのレイヤー設定
-		for (int i = 5; i <= 58; i++) {
-			m_model->GetNode(i)->SetAnimationLayer(1);
-		}
-		m_inventory.resize(m_maxItems);
-		m_inventory_image = COPY_RESOURCE("Inventory", CImage);
+	// アニメーションのレイヤー設定
+	for (int i = 5; i <= 58; i++) {
+		m_model->GetNode(i)->SetAnimationLayer(1);
+	}
+	m_inventory.resize(m_maxItems);
+	m_inventory_image = COPY_RESOURCE("Inventory", CImage);
 
-		// ゲージ生成
-		Base::Add(m_gauge = new Gauge(Gauge::GaugeType::ePlayerGauge, 0.28f));
-		Base::Add(m_gauge1 = new Gauge(Gauge::GaugeType::ePlayerStamina, 0.3f));
-	
+	// ゲージ生成
+	Base::Add(m_gauge = new Gauge(Gauge::GaugeType::ePlayerGauge, 0.28f));
+	Base::Add(m_gauge1 = new Gauge(Gauge::GaugeType::ePlayerStamina, 0.3f));
+
 }
 
 // 地面判定を更新
@@ -146,23 +149,23 @@ void Player::Idle()
 	int animation = 0;
 	SelectItem();
 	HandleMovement(key_dir, animation);
-	
+
 	//ジェットパック
-	if (HOLD(CInput::eMouseL)&& m_isJetpackActive&& m_jetpackFuel > 0.0f)
+	if (HOLD(CInput::eMouseL) && m_isJetpackActive && m_jetpackFuel > 0.0f)
 	{
 		m_isGround = false;
 		m_isFalling = false;
 
 		//浮上する
-		m_vec += (CMatrix::MRotation(Camera::Instance()->m_rot).GetUp()* m_jetpackForce*1.3f );
+		m_vec += (CMatrix::MRotation(Camera::Instance()->m_rot).GetUp() * m_jetpackForce * 1.3f);
 
 		if (m_Force <= 0.015f)
 		{
 			m_Force += 0.0003f;
 		}
 
-		m_vec += CVector3D(0,m_Force,0);
-		
+		m_vec += CVector3D(0, m_Force, 0);
+
 		//燃料消費
 		JetPackFuel(0);
 	}
@@ -170,13 +173,13 @@ void Player::Idle()
 	{
 		JetPackOff();
 	}
-	
+
 
 	// キー入力があれば
 	if (key_dir.LengthSq() > 0) {
 		// ■移動処理 回転行列×キー方向
 		CVector3D dir = CMatrix::MRotationY(m_rot.y) * key_dir;
-		m_velocity += dir *BaseSpead;
+		m_velocity += dir * BaseSpead;
 		if (m_isGround)
 		{
 			m_model->ChangeAnimation(0, animation);
@@ -202,14 +205,12 @@ void Player::Idle()
 
 			if (m_model->GetAnimationFrame(0) == se_frame[animation][idx]) {
 				idx = (idx + 1) % 2;
-				SOUND("足音")->Play3D(m_pos,CVector3D::zero,false,true, EFX_REVERB_PRESET_CAVE);
+				SOUND("足音")->Play3D(m_pos, CVector3D::zero, false, true, EFX_REVERB_PRESET_CAVE);
 			}
-
-
 		}
 		m_state = eState_Move;
 		m_isMove = true;
-		
+
 	}
 
 	else
@@ -239,13 +240,13 @@ void Player::Idle()
 
 
 	}
-		m_state = eState_Idle;
-		
-	if (!m_isAttacking&&PUSH(CInput::eMouseL)&& m_carry&& m_carry->m_type == eWeapon) {
+	m_state = eState_Idle;
+
+	if (!m_isAttacking && PUSH(CInput::eMouseL) && m_carry && m_carry->m_type == eWeapon) {
 		m_isChargeing = true;   // チャージ開始
 		m_ChargeTime = 0.0f;
 		m_state = eState_Attack00;
-		
+
 	}
 }
 
@@ -258,18 +259,18 @@ void Player::Attack()
 	HandleMovement(key_dir, animation);
 
 
-		//キャラクターの回転値をカメラの回転値に合わせる
-		m_rot.y = Camera::Instance()->m_rot.y;
+	//キャラクターの回転値をカメラの回転値に合わせる
+	m_rot.y = Camera::Instance()->m_rot.y;
 
 	// キー入力があれば
 	if (key_dir.LengthSq() > 0) {
 		// ■移動処理 回転行列×キー方向
 		CVector3D dir = CMatrix::MRotationY(m_rot.y) * key_dir;
 		m_model->ChangeAnimation(0, animation);
-		m_velocity += dir * BaseSpead * move_speed ;
+		m_velocity += dir * BaseSpead * move_speed;
 	}
 	else
-	{	
+	{
 		//キー入力がなければ
 		if (!m_carry)
 		{
@@ -277,79 +278,79 @@ void Player::Attack()
 		}
 		if (m_carry)
 		{
-				
+
 			m_model->ChangeAnimation(0, 9, 0.2f);
 		}
-		
-	
+
+
 	}
 
 	//ため攻撃を作りたい
-		if (!m_isAttacking&&HOLD(CInput::eMouseL)&& m_carry)
-		{
-			m_isAttacking = false;
-			m_model->ChangeAnimation(1,3, false);
-			m_ChargeTime++;
-			if (!tamekougeki)
-				SOUND("ため攻撃")->Play(false);
+	if (!m_isAttacking && HOLD(CInput::eMouseL) && m_carry)
+	{
+		m_isAttacking = false;
+		m_model->ChangeAnimation(1, 3, false);
+		m_ChargeTime++;
+		if (!tamekougeki)
+			SOUND("ため攻撃")->Play(false);
 
-			tamekougeki = true;
-		}
-		
-		if (!m_isAttacking && PULL(CInput::eMouseL) && m_carry && m_stamina > 20)
+		tamekougeki = true;
+	}
+
+	if (!m_isAttacking && PULL(CInput::eMouseL) && m_carry && m_stamina > 20)
+	{
+		SOUND("ため攻撃")->Stop();
+		m_isAttackReleased = true;//クリックを離した瞬間
+		if (m_isChargeing)
 		{
-			SOUND("ため攻撃")->Stop();
-			m_isAttackReleased = true;//クリックを離した瞬間
-			if (m_isChargeing)
-			{
-				m_isAttacking = true;
-				if (m_ChargeTime >= 35.0f) {
-					m_stamina -= 20;
-					tamekougeki = false;
-					m_state = eState_Attack01; // チャージ攻撃
-				}
-				else {
-					m_stamina -= 20;
-					tamekougeki = false;
-					m_model->ChangeAnimation(1, 5, false);
-					m_model->SetAnimationSpeed(1, move_speed);
-					m_model->ChangeAnimation(0, 9, 0.2f);
-				}
-				if (!tamekougeki)
-					SOUND("ため攻撃")->Stop();
+			m_isAttacking = true;
+			if (m_ChargeTime >= 35.0f) {
+				m_stamina -= 20;
+				tamekougeki = false;
+				m_state = eState_Attack01; // チャージ攻撃
 			}
-		}
-		else
-		{
-			m_isAttackReleased = false; //クリックを話してない時はリセット
-		}
-
-		//---------------------------------------
-		
-		// 攻撃中かどうかのチェック
-		
-			if (m_isAttacking&&m_model->isAnimationEnd(1))
-			{
-				m_model->ChangeAnimation(1, 9, 0.2f);
+			else {
+				m_stamina -= 20;
+				tamekougeki = false;
+				m_model->ChangeAnimation(1, 5, false);
+				m_model->SetAnimationSpeed(1, move_speed);
 				m_model->ChangeAnimation(0, 9, 0.2f);
-				m_isAttacking = false;
-				m_isChargeing = false;
-				m_state = eState_Idle;
-				
 			}
-
-			float speadscale = 1.0f;
-			if (HOLD(CInput::eButton4) && m_stamina > 0)
-			{
-				m_stamina -= 0.2;
-				speadscale = 1.5f;
-
-			}
-			
-			//チャージ中のスタミナ回復でバグを避ける
-			if(m_stamina <m_stamina_max&&tamekougeki)
-			m_stamina += 0.5;
+			if (!tamekougeki)
+				SOUND("ため攻撃")->Stop();
 		}
+	}
+	else
+	{
+		m_isAttackReleased = false; //クリックを話してない時はリセット
+	}
+
+	//---------------------------------------
+
+	// 攻撃中かどうかのチェック
+
+	if (m_isAttacking && m_model->isAnimationEnd(1))
+	{
+		m_model->ChangeAnimation(1, 9, 0.2f);
+		m_model->ChangeAnimation(0, 9, 0.2f);
+		m_isAttacking = false;
+		m_isChargeing = false;
+		m_state = eState_Idle;
+
+	}
+
+	float speadscale = 1.0f;
+	if (HOLD(CInput::eButton4) && m_stamina > 0)
+	{
+		m_stamina -= 0.2;
+		speadscale = 1.5f;
+
+	}
+
+	//チャージ中のスタミナ回復でバグを避ける
+	if (m_stamina < m_stamina_max && tamekougeki)
+		m_stamina += 0.5;
+}
 
 
 void Player::tameAttack()
@@ -375,8 +376,8 @@ void Player::tameAttack()
 		m_model->ChangeAnimation(0, 9, 0.2f);
 	}
 
-	m_model->ChangeAnimation(1,4, false);
-	
+	m_model->ChangeAnimation(1, 4, false);
+
 
 
 	if (m_isAttacking && m_model->isAnimationEnd(1))
@@ -393,7 +394,7 @@ void Player::tameAttack()
 void Player::Down()
 {
 	//SetKill();
-	m_model->ChangeAnimation(12,false);
+	m_model->ChangeAnimation(12, false);
 }
 
 void Player::HandleMovement(CVector3D& key_dir, int& animation)
@@ -414,7 +415,7 @@ void Player::HandleMovement(CVector3D& key_dir, int& animation)
 	if (HOLD(CInput::eLeft)) {
 		key_dir.x = 0.8 * adjustedSpeed;
 		animation = 1; // 左移動アニメーション
-		m_footstepInterval= 0.6f; // 足音の間隔を設定
+		m_footstepInterval = 0.6f; // 足音の間隔を設定
 
 	}
 	if (HOLD(CInput::eRight)) {
@@ -455,7 +456,6 @@ void Player::HandleMovement(CVector3D& key_dir, int& animation)
 		m_JumpDelay = 0;
 	}
 
-	
 
 	if (m_isDashing) {
 		m_footstepInterval = 0.3f; // ダッシュ時は間隔を短く
@@ -490,7 +490,7 @@ bool Player::CheckItemCollision(const CVector3D& dir)
 {
 
 	CVector3D newPos = m_pos + dir * move_speed;
-	CVector3D start = m_pos + CVector3D(0,1,0);
+	CVector3D start = m_pos + CVector3D(0, 1, 0);
 	CVector3D end = start + dir * 1.2f;
 
 	//かぷせるの表示
@@ -498,15 +498,15 @@ bool Player::CheckItemCollision(const CVector3D& dir)
 
 	CVector3D hitPos;
 	CVector3D hitNormal;
-	
+
 	std::vector<Base*> list = FindObjects(eWeapon);
 	std::vector<Base*> list1 = FindObjects(eEnemy);
 	std::vector<Base*> list2 = FindObjects(eItem);
 
 	//リストの結合
 	list.insert(list.end(), list1.begin(), list1.end());
-	list.insert(list.end(),list2.begin(), list2.end());
-	
+	list.insert(list.end(), list2.begin(), list2.end());
+
 	for (Base* b : list)
 	{
 		if (Enemy* enemy = dynamic_cast<Enemy*>(b))
@@ -515,12 +515,12 @@ bool Player::CheckItemCollision(const CVector3D& dir)
 		if (Spider* spider = dynamic_cast<Spider*>(b))
 			if (spider->GetHP() > 0)continue;
 
-		if (GreenDragon*greendragon  = dynamic_cast<GreenDragon*>(b))
+		if (GreenDragon* greendragon = dynamic_cast<GreenDragon*>(b))
 			if (greendragon->GetHP() > 0)continue;
-		
+
 		if (Carry* carry = dynamic_cast<Carry*>(b))
 		{
-			if (carry->m_stateItem !=Carry::e_Drop)continue;
+			if (carry->m_stateItem != Carry::e_Drop)continue;
 
 
 			//カプセル同士の衝突
@@ -544,15 +544,23 @@ bool Player::CheckItemCollision(const CVector3D& dir)
 			}
 		}
 	}
-		
-	
+
+
 	return false;
 }
 
 void Player::Update()
 {
 
-
+	// === 奈落チェック処理 ===
+	const float FALL_THRESHOLD = -20.0f; // 奈落とみなす高さ
+	if (m_pos.y <= FALL_THRESHOLD)
+	{
+		// 初期位置に戻す
+		m_pos = initialPosition;
+		m_velocity = CVector3D(0.0f, 0.0f, 0.0f); // 落下速度をリセット
+		printf("奈落から復帰しました\n"); // デバッグ用ログ
+	}
 
 	//回転値から方向ベクトルを計算
 	//CVector3D dir(CVector3D(sin(m_rot.y), 0, cos(m_rot.y)));
@@ -780,34 +788,46 @@ int Player::Pay(int Money)
 
 void Player::Draw()
 {
-	//名前長いので短い名前の参照で操作
-	CImage& img = m_inventory_image;
-	//表示基準位置
-	CVector2D base_pos(540,960);
-	const int icon_size = 96;
-	const int icon_idx = 2;
-	const int src_size = 128;
+	CImage& img = m_inventory_image; // スロット画像
+	CVector2D base_pos(540, 960);   // スロット表示の基準位置
+	const int icon_size = 96;       // スロット1つのサイズ
+	const int src_size = 128;       // スロット画像内の1アイコンのサイズ
 	img.SetSize(icon_size, icon_size);
-	//画像の中の	0番目…インベントリ用フレーム
-	//				1番目…装備用フレーム
-	//				2番目…アイテムアイコン
-	
-	//インベントリのアイテム
+
 	for (int i = 0; i < m_maxItems; i++) {
-		img.SetPos(base_pos + CVector2D(icon_size*i, 0));
-		if (m_inventory[i] && m_inventory[i]==m_carry) {
-			img.SetRect(0, 1 * src_size, src_size, (1 + 1) * src_size);
-		}	else {
-			img.SetRect(0, 0, src_size, 0 + src_size);
-		}
+		CVector2D slot_pos = base_pos + CVector2D((icon_size + 10) * i, 0);
+
+		// 1. 背景を描画
+		img.SetPos(slot_pos);
+		img.SetRect(0, 0, src_size, src_size); // 背景用の画像範囲
+		img.SetColor(0.2f, 0.2f, 0.2f, 1.0f); // デフォルト背景色（暗いグレー）
 		img.Draw();
+
+		// アイテムがある場合は背景を少し明るく
 		if (m_inventory[i]) {
-			int idx = icon_idx + m_inventory[i]->m_item_id;
-			img.SetRect(0, idx * src_size, src_size, (idx + 1) * src_size);
+			img.SetColor(0.4f, 0.4f, 0.4f, 1.0f); // 明るいグレー
 			img.Draw();
 		}
 
-		FONT_T()->Draw(img.m_pos.x, img.m_pos.y+32, 0.0f, 0.0f, .0f, "%d",i+1);
+		// 2. スロット枠を描画（選択状態をハイライト）
+		img.SetRect(0, 0, src_size, src_size); // スロット枠
+		if (m_inventory[i] && m_inventory[i] == m_carry) {
+			img.SetColor(1.0f, 1.0f, 0.0f, 1.0f); // 選択中の枠色（黄色）
+		} else {
+			img.SetColor(0.6f, 0.6f, 0.6f, 1.0f); // 通常枠色
+		}
+		img.Draw();
+
+		// 3. アイテムを描画
+		if (m_inventory[i]) {
+			int idx = 2 + m_inventory[i]->m_item_id; // アイテムIDに応じたアイコン
+			img.SetRect(0, idx * src_size, src_size, (idx + 1) * src_size);
+			img.SetColor(1.0f, 1.0f, 1.0f, 1.0f); // アイコンは明るく描画
+			img.Draw();
+		}
+
+		// 4. スロット番号を描画
+		FONT_T()->Draw(slot_pos.x + 36, slot_pos.y + 100, 0.8f, 0.8f, 1.0f, "%d", i + 1);
 	}
 }
 
@@ -819,13 +839,14 @@ int Player::GetPlayerMoney()
 void Player::GainMoney(int Money)
 {
 	PlayerMoneyMax += Money;
-	
+
 }
 
 void Player::Heal(int HealValue)
 {
 	m_hp += HealValue;
-	
+	if (m_hp > m_hp_max) m_hp = m_hp_max;
+
 }
 
 void Player::MovespeedUp(float speedUp)
@@ -841,7 +862,7 @@ bool Player::PlayerJump(bool canjump)
 void Player::ApplyFallDamage()
 {
 	//落下ダメージが発生する速度の闘値
-	float fallDamageValue= -0.5f; //この値より速いとダメージ
+	float fallDamageValue = -0.5f; //この値より速いとダメージ
 
 	//プレイヤーが地面に着地したときに、垂直速度に基づいてダメージを計算
 	if (m_vec.y < fallDamageValue)
@@ -946,14 +967,16 @@ void Player::DropCarry(Carry* carry)
 		}
 
 		m_carry = nullptr;
-		// インベントリに他のアイテムがあれば自動的に装備する
-		for (auto& c : m_inventory) {
-			if (c) {
-				// ここで他のアイテムがあれば装備
-				m_carry = c;
-				m_carry->Equip();
-				m_carry->m_stateItem = Carry::e_Equip; // 状態を担ぎに設定
-				m_isCarrying = true;
+		// インベントリに他のアイテムがある場合だけ装備する
+		if (!m_isCarrying && m_carry == nullptr) {
+			for (auto& item : m_inventory) {
+				if (item) {
+					m_carry = item;
+					m_carry->Equip();
+					m_carry->m_stateItem = Carry::e_Equip;
+					m_isCarrying = true;
+					break;
+				}
 			}
 		}
 	}
@@ -974,11 +997,12 @@ bool Player::PickUpItem(Carry* carry)
 		i++;
 	}
 	//空きがあれば
-	if (empty_idx>=0) {
+	if (empty_idx >= 0) {
 		m_inventory[empty_idx] = carry;
-		carry->PutInPocket(); 
+		carry->PutInPocket();
 		return true;
-	} else {
+	}
+	else {
 		// 所持アイテム数が上限に達している
 		return false;
 	}
@@ -986,11 +1010,21 @@ bool Player::PickUpItem(Carry* carry)
 
 void Player::SwapItem(int idx)
 {
+	//スロットが空なら何もしない
+	if (!m_inventory[idx])
+	{
+		return;
+	}
+
+	//既に選択されている場合も何もしない
 	if (m_inventory[idx] == m_carry) return;
+	
+	//現在装備中のアイテムをポケットに戻す。
 	if (m_carry) {
 		// 現在のアイテムの装備解除
 		m_carry->PutInPocket();
 	}
+
 	// インベントリのアイテムと入れ替え
 	m_carry = m_inventory[idx];
 	m_carry->Equip();
@@ -999,8 +1033,8 @@ void Player::SwapItem(int idx)
 
 void Player::SelectItem()
 {
-	for (int i = 0;i<m_inventory.size(); i++) {
-		if (PUSH((CInput::E_BUTTON)(CInput::eNum1+i))) {
+	for (int i = 0; i < m_inventory.size(); i++) {
+		if (PUSH((CInput::E_BUTTON)(CInput::eNum1 + i))) {
 			SwapItem(i);
 		}
 	}
@@ -1025,8 +1059,8 @@ void Player::SaveOriginalWeight() {
 
 // 重さを元に戻す関数
 void Player::ResetToOriginalWeight() {
-	if(m_inventory.size() <= 0)
-	m_weight = m_originalWeight;
+	if (m_inventory.size() <= 0)
+		m_weight = m_originalWeight;
 }
 
 /*
@@ -1081,25 +1115,25 @@ void Player::Render()
 
 	printf("%f\n", m_Force);
 
-		m_lineS = m_pos + CVector3D(0, 1.8f - m_rad, 0);
-		m_lineE = m_pos + CVector3D(0, m_rad, 0);
-	
+	m_lineS = m_pos + CVector3D(0, 1.8f - m_rad, 0);
+	m_lineE = m_pos + CVector3D(0, m_rad, 0);
+
 	//Utility::DrawCapsule(m_lineS, m_lineE, m_rad, CVector4D(0, 0, 1, 0.5));
-	
+
 	//ジェットパックの燃料を表示したい
-		if (m_isJetpackActive)
-		{
-			FONT_T()->Draw(200, 200, 1.0f, 0.0f, 0.0f, "燃料 %d",m_jetpackFuel);
-		}
+	if (m_isJetpackActive)
+	{
+		FONT_T()->Draw(200, 200, 1.0f, 0.0f, 0.0f, "燃料 %d", m_jetpackFuel);
+	}
 
 	// プレイヤーとカメラの距離を計算
 	float DistanceToCamera = Camera::Instance()->GetDistance();
 
 	// 頭部を非表示にする距離の閾値
-	float hideHeadDistance = 0.2f; 
+	float hideHeadDistance = 0.2f;
 
 	// 頭部を非表示にする条件を設定
-	bool hideHead = (DistanceToCamera <  hideHeadDistance);
+	bool hideHead = (DistanceToCamera < hideHeadDistance);
 
 	if (hideHead)
 	{
@@ -1115,7 +1149,7 @@ void Player::Render()
 
 void Player::Collision(Base* b)
 {
-	
+
 	switch (b->GetType()) {
 
 	case eEnemy:
@@ -1194,26 +1228,26 @@ void Player::Collision(Base* b)
 		break;
 
 	case eSpiderBullet:
+	{
+		if (SpiderBullet* w = dynamic_cast<SpiderBullet*>(b))
 		{
-				if (SpiderBullet* w = dynamic_cast<SpiderBullet*>(b))
+			//カプセル同士の衝突
+			if (CCollision::CollisionCapsuleShpere(m_lineS, m_lineE, 0.4f, w->m_pos, w->m_rad))
+			{
+				if (threadattachtimer <= 0)
 				{
-					//カプセル同士の衝突
-					if (CCollision::CollisionCapsuleShpere(m_lineS,m_lineE,0.4f,w->m_pos,w->m_rad))
-					{
-						if (threadattachtimer <= 0)
-						{
-							int damage = 2;
+					int damage = 2;
 
-							m_hp -= damage;
-							threadattachtimer = 180.0f;
+					m_hp -= damage;
+					threadattachtimer = 180.0f;
 
-							RedFilterDisplay();
-						}
-					}
+					RedFilterDisplay();
 				}
-
+			}
 		}
-		break;
+
+	}
+	break;
 
 	case eField: {
 		CVector3D v(0, 0, 0);

@@ -11,4 +11,7 @@ void SceneManager::LoadTitle()
 {
 	KillALL();
 	Base::Add(new Title());
+
+	while (ShowCursor(true) < 0);  // カーソルを再表示
+	CInput::ShowCursor(true);
 }

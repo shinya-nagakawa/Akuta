@@ -12,11 +12,20 @@ private:
 	CModel* mp_model;
 	CModel* mp_col_model;
 	CModel* mp_colNavModel;	//ナビゲーション用のコリジョンモデル
+
+	int SellCount; // 売却された敵の数
+	bool isFinished; // 終了フラグ
 public:
 	Field(int area);
 	~Field();
 	void Update();
 	void Render();
+
+	void IncrementSellCount();
+	int GetSellCount() {
+		return SellCount;
+	}
+	
 
 	CModel* GetModel() 
 	{

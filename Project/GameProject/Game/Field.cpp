@@ -3,9 +3,15 @@
 #include "BuyPoint.h"
 #include "Sellpoint.h"
 #include "Tutorial/TutorialManager.h"
+#include "BlackFilter.h"
 #include "Tutorial/Renderer.h"
+#include "Title.h"
+#include "Weapon.h"
+#include "Enemy.h"
+#include "Spider.h"
 
-Field::Field(int area) : Base(eField), tutorialManager(nullptr) {
+
+Field::Field(int area) : Base(eField), tutorialManager(nullptr), SellCount(0), isFinished(false) {
     switch (area) {
     case 0: {
         // チュートリアルエリアの初期化
@@ -19,14 +25,21 @@ Field::Field(int area) : Base(eField), tutorialManager(nullptr) {
 
         // チュートリアル文章を設定
         std::vector<std::wstring> tutorialSteps = {
-            L"やぁ！このエリアでは基本操作を学べます。",
-            L"WASDキーを使ってキャラクターを動かしてみましょう！",
-            L"スペースキーでジャンプしてみてください！",
-            L"お疲れ様でした！次のエリアへ進みましょう！"
+    L"やぁ！このエリアでは基本操作を学べます。",
+    L"WASDキーを使ってキャラクターを動かしてみましょう！",
+    L"スペースキーでジャンプしてみてください！",
+    L"足元に武器があります。Eキーを押して拾いましょう！",
+    L"敵が近づいてきます！左クリックで攻撃してください！",
+    L"倒した敵を売却地点まで運びましょう！",
+    L"素晴らしい！次のエリアへ進みましょう！"
         };
 
-        Base::Add(new Sellpoint(CVector3D(0, -5.0, 0)));
-        Base::Add(new BuyPoint(CVector3D(2, -5.0, 0)));
+        Base::Add(new Sellpoint(CVector3D(0, -4.5, 0)));
+        Base::Add(new BuyPoint(CVector3D(2, -4.5, 0)));
+        Base::Add(new Weapon(false, CVector3D(0, 0, 3), 5.0f));
+        Base::Add(new Enemy(CVector3D(0, 2, 15), 2, 25, Enemy::eRole_Flanker));
+        Base::Add(new Spider(CVector3D(4, 0, 60), 1, 10));
+        Base::Add(new Spider(CVector3D(0, 0, 60), 1, 15));
 
         // TutorialManagerの初期化
         tutorialManager = new TutorialManager(tutorialSteps, 0.05f); // 1文字0.05秒で表示
@@ -42,6 +55,40 @@ Field::Field(int area) : Base(eField), tutorialManager(nullptr) {
 
         mp_colNavModel = GET_RESOURCE("FieldNav", CModel);
         mp_colNavModel->UpdateMatrix();
+
+        Base::Add(new Sellpoint(CVector3D(0, -1.0, 0)));
+        Base::Add(new BuyPoint(CVector3D(2, -1.0, 0)));
+        Base::Add(new Sellpoint(CVector3D(12.51, -1.0, 58.52)));
+        Base::Add(new BuyPoint(CVector3D(14.51, -1.0, 58.52)));
+
+        Base::Add(new Sellpoint(CVector3D(-6.741, 2, 128.02)));
+        Base::Add(new BuyPoint(CVector3D(-6.741, 2, 130.02)));
+
+        Base::Add(new Weapon(false, CVector3D(0, -1, 1), 5.0f));
+        
+        Base::Add(new Spider(CVector3D(29, 1, 28), 3, 10));
+        Base::Add(new Spider(CVector3D(-16, 1, 28), 3, 10));
+        Base::Add(new Spider(CVector3D(4, -1, 107), 3, 10));
+
+        Base::Add(new Enemy(CVector3D(21, 0.8, 9), 2, 25, Enemy::eRole_Flanker));
+        Base::Add(new Enemy(CVector3D(20, 0.8, 9), 2, 25, Enemy::eRole_Flanker));
+
+        Base::Add(new Enemy(CVector3D(42.26, -1.318, 86.97), 2, 25, Enemy::eRole_Flanker));
+        Base::Add(new Enemy(CVector3D(43.26, -1.318, 86.97), 2, 25, Enemy::eRole_Attacker));
+
+
+        Base::Add(new Enemy(CVector3D(11.96, -1.318, 82.54), 2, 25, Enemy::eRole_Flanker));
+        Base::Add(new Enemy(CVector3D(-6.77, -1.318, 71.66), 2, 25, Enemy::eRole_Flanker));
+
+        Base::Add(new Spider(CVector3D(7.25, -1, 72.51), 3, 10));
+        Base::Add(new Spider(CVector3D(18, -0.5, 49), 3, 10));
+
+        Base::Add(new Enemy(CVector3D(30.1, -1.318, 99.96), 2, 25, Enemy::eRole_Attacker));
+        Base::Add(new Enemy(CVector3D(31.1, -1.318, 99.96), 2, 25, Enemy::eRole_Attacker));
+        Base::Add(new Spider(CVector3D(30, -0.5, 46), 3, 10));
+
+        Base::Add(new Weapon(false, CVector3D(-3, 0,0), 5.0f));
+
         int idx = 3;
         // ライトの追加
         Base::Add(new Light(CVector3D(13.46, 0, 105.8), idx++));
@@ -69,7 +116,6 @@ Field::Field(int area) : Base(eField), tutorialManager(nullptr) {
         Base::Add(new Light(CVector3D(-0.552, 2.734, 22.693), idx++));
 
         Base::Add(new Light(CVector3D(36.902, 3.267, 32.165), idx++));
-
         break;
     }
     }
@@ -100,7 +146,7 @@ void Field::Update() {
         }
     }
 
-   
+
 }
 
 void Field::Render() {
@@ -111,5 +157,10 @@ void Field::Render() {
     if (tutorialManager && !tutorialManager->IsFinished()) {
         tutorialManager->Render();
     }
+}
+
+void Field::IncrementSellCount() 
+{
+    SellCount++;
 }
 

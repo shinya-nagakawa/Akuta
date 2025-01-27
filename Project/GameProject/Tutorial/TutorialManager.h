@@ -23,15 +23,18 @@ private:
     bool m_isSlidingOut;
     float m_slideProgress;
     float m_slideDuration;
-
-
+    bool m_waitForSellCount;
+    int m_requiredSellCount;
+    int currentSellCount;
 
 public:
     TutorialManager(const std::vector<std::wstring>& steps, float charDisplaySpeed);
 
     void Start();                  // チュートリアル開始
+    void SetSellCountCondition(int requiredSellCount);
     void Update(float deltaTime);  // 毎フレーム更新
     void Render();                 // 毎フレーム描画
     void NextStep();               // 次のステップに進む
     bool IsFinished() const;       // チュートリアルが終了したか確認
+    void ForceDisplayMessage(const std::wstring& message);
 };

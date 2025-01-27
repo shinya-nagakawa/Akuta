@@ -134,7 +134,7 @@ private:
 	void Down();
 public:
 	Enemy(const CVector3D& pos, int enemy_Hp, float weight,EnemyRole role);
-	
+	~Enemy();
 	
 	bool IsFoundTarget();
 	bool IsFoundPlayer() const;
